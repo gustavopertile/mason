@@ -6,6 +6,8 @@ use App\Models\Company;
 use App\Models\Employee;
 use App\Models\Project;
 use App\Models\Task;
+use App\Models\TimeEntry;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -33,5 +35,70 @@ class DatabaseSeeder extends Seeder
                 );
             });
         });
+
+        $this->seedTimeEntries(Employee::with(['projects.company', 'companies.tasks'])->get());
+    }
+
+    /**
+     * Generate ~2 weeks of historical time entries while respecting the
+     * "one project per (employee, date)" rule across the *entire* dataset
+     * — even when an employee belongs to multiple companies. We iterate
+     * per employee × date, pick a single project from any company, then
+     * spread 1–2 tasks from that project's company across the day.
+     *
+     * @param  \Illuminate\Support\Collection<int, Employee>  $employees
+     */
+    private function seedTimeEntries($employees): void
+    {
+        $start = CarbonImmutable::now()->subDays(14)->startOfDay();
+
+        foreach ($employees as $employee) {
+            if ($employee->projects->isEmpty()) {
+                continue;
+            }
+
+            for ($offset = 0; $offset < 14; $offset++) {
+                $date = $start->addDays($offset);
+
+                // Skip weekends and a sprinkle of weekdays so the dataset
+                // doesn't look like a wall of identical rows.
+                if ($date->isWeekend() || random_int(0, 100) < 30) {
+                    continue;
+                }
+
+                /** @var Project $project */
+                $project = $employee->projects->random();
+                $companyTasks = $employee->companies
+                    ->firstWhere('id', $project->company_id)
+                    ?->tasks ?? collect();
+
+                if ($companyTasks->isEmpty()) {
+                    continue;
+                }
+
+                $taskCount = min(random_int(1, 2), $companyTasks->count());
+                $taskIds = $companyTasks->random($taskCount);
+                $taskIds = $taskIds instanceof \Illuminate\Support\Collection
+                    ? $taskIds->pluck('id')
+                    : collect([$taskIds->id]);
+
+                foreach ($taskIds as $taskId) {
+                    TimeEntry::create([
+                        'company_id'  => $project->company_id,
+                        'employee_id' => $employee->id,
+                        'project_id'  => $project->id,
+                        'task_id'     => $taskId,
+                        'date'        => $date->toDateString(),
+                        'hours'       => $this->randomHours(),
+                    ]);
+                }
+            }
+        }
+    }
+
+    private function randomHours(): float
+    {
+        // Quarters between 1.0 and 6.0 hours.
+        return round(random_int(4, 24) / 4, 2);
     }
 }
