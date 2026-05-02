@@ -1,58 +1,128 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Time Entry Interface (Laravel + Vue)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A small Laravel + Vue 3 (Composition API) application for entering and viewing employee time entries — built as an engineering test exercise.
 
-## About Laravel
+## Requirements
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP 8.2+ (tested on 8.4)
+- Composer 2.x
+- Node.js 20+ (tested on 23)
+- npm 10+
+- SQLite (bundled with PHP — no DB server needed)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Setup
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone <repo-url> mason
+cd mason
+cp .env.example .env
+composer install
+npm install
+php artisan key:generate
+touch database/database.sqlite
+php artisan migrate:fresh --seed
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## Run
 
-## Contributing
+In two terminals:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+# Terminal 1
+php artisan serve
 
-## Code of Conduct
+# Terminal 2
+npm run dev
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Then open http://127.0.0.1:8000.
 
-## Security Vulnerabilities
+## Tests
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+php artisan test
+```
 
-## License
+23 feature/unit tests cover the data model, lookup endpoints, and every business-rule path.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## API surface
+
+All endpoints live under `/api`.
+
+| Method | Path | Description |
+|---|---|---|
+| GET | `/api/companies` | All companies. |
+| GET | `/api/companies/{company}/employees` | Employees that belong to a company. |
+| GET | `/api/companies/{company}/projects` | Projects owned by a company. |
+| GET | `/api/companies/{company}/tasks` | Tasks defined by a company. |
+| GET | `/api/companies/{company}/projects/{project}/employees` | Employees on the project who are also on the company (narrows the employee picker once a project is selected). |
+| GET | `/api/time-entries?company_id=<id>` | List entries; `company_id` is optional and filters the list. |
+| POST | `/api/time-entries` | Batched create. Body: `{ "entries": [ { company_id, employee_id, project_id, task_id, date, hours }, ... ] }`. Returns `201` with the created entries, or `422` with `entries.{i}.{field}` keyed errors. |
+
+## Business rules (server-enforced)
+
+`StoreTimeEntriesRequest` enforces all five rules — both within the submitted batch and against existing rows:
+
+1. The employee must belong to the selected company.
+2. The project must belong to the selected company.
+3. The task must belong to the selected company.
+4. The employee must be assigned to the selected project.
+5. An employee cannot have time on more than one project for a given date. They *can* split that day across multiple tasks within the same project.
+
+Validation errors come back keyed per row and field (`entries.0.project_id`, `entries.2.hours`, …) so the frontend can highlight exactly the offending cell.
+
+## UX choices
+
+- The top-level company selector defaults to **All** (per spec). When set to a specific company:
+  - New Entries pre-fills that company on rows whose company hasn't been chosen yet (never overwrites a manual selection).
+  - History narrows to that company's entries.
+- Per-row validation errors render inline with red borders and a one-line message under the field.
+- Tab moves through fields in the spec order (Company → Date → Employee → Project → Task → Hours).
+- `⌘D` / `Ctrl+D` duplicates the last row; `⌘Enter` / `Ctrl+Enter` submits.
+- Each row has explicit "Duplicate" and "Remove" buttons for mouse users.
+
+## Performance notes
+
+- Lookup endpoints (`employees`, `projects`, `tasks`) are scoped per company so payloads stay small even with many companies.
+- The frontend caches lookup responses in-memory for the lifetime of the page (`composables/useApi.js`). Concurrent rows opening the same company share a single in-flight request via a promise cache.
+- `time_entries` carries indexes on `(employee_id, date)` for the business-rule lookup and `(company_id, date)` for history filtering.
+- The list endpoint eager-loads all four belongs-to relations to avoid N+1.
+- For larger datasets, the History endpoint should add pagination (`paginate(50)`) and the dropdowns should switch to typeahead/search. Stubbed for now to keep the surface small.
+
+## What's intentionally not implemented
+
+- AI-assisted natural-language entry (Super Bonus). Will be added in a follow-up — the rest of the app is stable groundwork for it.
+- Edit / delete from history.
+- Summary totals beyond row count + sum.
+- Authentication (out of scope per spec).
+
+## Project layout (relevant pieces)
+
+```
+app/
+  Http/
+    Controllers/Api/    # one controller per resource
+    Requests/StoreTimeEntriesRequest.php
+    Resources/TimeEntryResource.php
+  Models/               # Company, Employee, Project, Task, TimeEntry
+database/
+  migrations/           # 7 migrations
+  factories/            # one per model
+  seeders/DatabaseSeeder.php
+resources/
+  js/
+    App.vue
+    components/         # CompanyFilter, Tabs, NewEntriesTab, EntryRow, HistoryTab
+    composables/        # useApi (axios + cache), useCompanyData, useTimeEntries
+  views/app.blade.php
+routes/
+  api.php
+  web.php
+tests/
+  Feature/              # CompanyScopedListsTest, TimeEntryApiTest, TimeEntryStoreTest
+  Unit/RelationshipsTest.php
+docs/PLAN.md            # original implementation plan
+conversation.json       # AI conversation export
+```
