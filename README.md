@@ -15,17 +15,20 @@ A small Laravel + Vue 3 (Composition API) application for entering and viewing e
 ```bash
 git clone <repo-url> mason
 cd mason
-cp .env.example .env
-composer install
-npm install
-php artisan key:generate
-touch database/database.sqlite
-php artisan migrate:fresh --seed
+composer setup
 ```
+
+`composer setup` runs `composer install`, copies `.env`, creates the SQLite file, generates the app key, runs migrations + seeders, and installs/builds the frontend.
 
 ## Run
 
-In two terminals:
+```bash
+composer dev
+```
+
+Runs Laravel's bundled dev orchestrator (server + queue listener + log tail + Vite) on a single command. Open http://127.0.0.1:8000.
+
+If you'd rather run pieces separately:
 
 ```bash
 # Terminal 1
@@ -34,8 +37,6 @@ php artisan serve
 # Terminal 2
 npm run dev
 ```
-
-Then open http://127.0.0.1:8000.
 
 ## Tests
 
