@@ -15,3 +15,5 @@ Route::get('companies/{company}/projects/{project}/employees', [EmployeeControll
 
 Route::get('time-entries', [TimeEntryController::class, 'index']);
 Route::post('time-entries', [TimeEntryController::class, 'store']);
+Route::put('time-entries/{time_entry}', [TimeEntryController::class, 'update']);
+Route::delete('time-entries/{time_entry}', [TimeEntryController::class, 'destroy']);

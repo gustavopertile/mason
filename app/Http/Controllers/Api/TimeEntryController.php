@@ -4,12 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTimeEntriesRequest;
+use App\Http\Requests\UpdateTimeEntryRequest;
 use App\Http\Resources\TimeEntryResource;
 use App\Models\TimeEntry;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 
 class TimeEntryController extends Controller
@@ -53,5 +55,25 @@ class TimeEntryController extends Controller
         return TimeEntryResource::collection($created)
             ->response()
             ->setStatusCode(201);
+    }
+
+    public function update(UpdateTimeEntryRequest $request, TimeEntry $timeEntry): TimeEntryResource
+    {
+        $timeEntry->update($request->validated());
+        $timeEntry->load([
+            'company:id,name',
+            'employee:id,name',
+            'project:id,name',
+            'task:id,name',
+        ]);
+
+        return new TimeEntryResource($timeEntry);
+    }
+
+    public function destroy(TimeEntry $timeEntry): Response
+    {
+        $timeEntry->delete();
+
+        return response()->noContent();
     }
 }
