@@ -18,6 +18,8 @@ class TimeEntryController extends Controller
 {
     public function index(Request $request): AnonymousResourceCollection
     {
+        $perPage = min(max($request->integer('per_page', 20), 1), 100);
+
         $entries = TimeEntry::query()
             ->with([
                 'company:id,name',
@@ -25,12 +27,27 @@ class TimeEntryController extends Controller
                 'project:id,name',
                 'task:id,name',
             ])
-            ->when($request->filled('company_id'), function ($query) use ($request) {
-                $query->where('company_id', $request->integer('company_id'));
+            ->when($request->filled('company_id'), function ($q) use ($request) {
+                $q->where('company_id', $request->integer('company_id'));
+            })
+            ->when($request->filled('from'), function ($q) use ($request) {
+                $q->whereDate('date', '>=', $request->input('from'));
+            })
+            ->when($request->filled('to'), function ($q) use ($request) {
+                $q->whereDate('date', '<=', $request->input('to'));
+            })
+            ->when($request->filled('search'), function ($q) use ($request) {
+                $term = '%' . $request->input('search') . '%';
+                $q->where(function ($q) use ($term) {
+                    $q->whereHas('company',  fn ($qq) => $qq->where('name', 'like', $term))
+                      ->orWhereHas('employee', fn ($qq) => $qq->where('name', 'like', $term))
+                      ->orWhereHas('project',  fn ($qq) => $qq->where('name', 'like', $term))
+                      ->orWhereHas('task',     fn ($qq) => $qq->where('name', 'like', $term));
+                });
             })
             ->latest('date')
             ->latest('id')
-            ->get();
+            ->paginate($perPage);
 
         return TimeEntryResource::collection($entries);
     }
