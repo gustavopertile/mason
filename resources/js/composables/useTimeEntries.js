@@ -1,15 +1,30 @@
 import { apiClient, invalidate } from './useApi';
 
-export async function listTimeEntries(companyId = null) {
-  const params = companyId ? { company_id: companyId } : {};
-  const { data } = await apiClient.get('/time-entries', { params });
-  return data.data;
+/**
+ * Returns the full paginated payload (`{ data, links, meta }`) so the
+ * caller can render pagination controls alongside the rows.
+ */
+export async function listTimeEntries(params = {}) {
+  const cleaned = Object.fromEntries(
+    Object.entries(params).filter(([, v]) => v !== null && v !== undefined && v !== ''),
+  );
+  const { data } = await apiClient.get('/time-entries', { params: cleaned });
+  return data;
 }
 
 export async function createTimeEntries(entries) {
   const { data } = await apiClient.post('/time-entries', { entries });
-  // Lookup data may have changed indirectly — keep the lookup cache,
-  // but if we ever cache time-entry GETs, we'd evict them here.
   invalidate('/time-entries');
   return data.data;
+}
+
+export async function updateTimeEntry(id, payload) {
+  const { data } = await apiClient.put(`/time-entries/${id}`, payload);
+  invalidate('/time-entries');
+  return data.data;
+}
+
+export async function deleteTimeEntry(id) {
+  await apiClient.delete(`/time-entries/${id}`);
+  invalidate('/time-entries');
 }

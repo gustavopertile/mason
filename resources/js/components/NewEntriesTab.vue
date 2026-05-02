@@ -67,6 +67,15 @@ function onKeydown(event) {
   } else if (event.key.toLowerCase() === 'd') {
     event.preventDefault();
     duplicateRow(rows.value.length - 1);
+  } else if (event.key.toLowerCase() === 'n') {
+    // Note: most browsers reserve Cmd/Ctrl+N for "new window" at the OS
+    // level, so preventDefault may not fire here. Working alternative:
+    // click "+ Add row" or press Cmd+B (also bound below).
+    event.preventDefault();
+    addRow();
+  } else if (event.key.toLowerCase() === 'b') {
+    event.preventDefault();
+    addRow();
   }
 }
 
@@ -160,7 +169,8 @@ async function submit() {
           + Add row
         </button>
         <p class="text-xs text-slate-500">
-          <kbd class="rounded border border-slate-300 px-1 py-0.5">⌘D</kbd> duplicate last ·
+          <kbd class="rounded border border-slate-300 px-1 py-0.5">⌘N</kbd> new ·
+          <kbd class="rounded border border-slate-300 px-1 py-0.5">⌘D</kbd> duplicate ·
           <kbd class="rounded border border-slate-300 px-1 py-0.5">⌘↵</kbd> submit
         </p>
       </div>
