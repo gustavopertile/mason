@@ -15,7 +15,9 @@ class EmployeeController extends Controller
         return response()->json([
             'data' => $company->employees()
                 ->orderBy('name')
-                ->get(['employees.id', 'employees.name']),
+                ->get(['employees.id', 'employees.name'])
+                ->makeHidden('pivot')
+                ->values(),
         ]);
     }
 
@@ -31,7 +33,9 @@ class EmployeeController extends Controller
             'data' => $project->employees()
                 ->whereIn('employees.id', $companyEmployeeIds)
                 ->orderBy('name')
-                ->get(['employees.id', 'employees.name']),
+                ->get(['employees.id', 'employees.name'])
+                ->makeHidden('pivot')
+                ->values(),
         ]);
     }
 }
