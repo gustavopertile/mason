@@ -33,6 +33,50 @@ class StoreTimeEntriesRequest extends FormRequest
         ];
     }
 
+    /**
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'entries.*.company_id'  => 'company',
+            'entries.*.employee_id' => 'employee',
+            'entries.*.project_id'  => 'project',
+            'entries.*.task_id'     => 'task',
+            'entries.*.date'        => 'date',
+            'entries.*.hours'       => 'hours',
+        ];
+    }
+
+    /**
+     * Custom messages. Anything not listed here falls back to Laravel's
+     * defaults, which read fine because `attributes()` swaps the raw
+     * `entries.0.company_id` paths for friendly labels like "company".
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'entries.required'           => 'Add at least one row before submitting.',
+            'entries.min'                => 'Add at least one row before submitting.',
+            'entries.*.company_id.required'  => 'Company is required.',
+            'entries.*.employee_id.required' => 'Employee is required.',
+            'entries.*.project_id.required'  => 'Project is required.',
+            'entries.*.task_id.required'     => 'Task is required.',
+            'entries.*.date.required'        => 'Date is required.',
+            'entries.*.date.date_format'     => 'Use a valid date (YYYY-MM-DD).',
+            'entries.*.hours.required'       => 'Hours is required.',
+            'entries.*.hours.numeric'        => 'Hours must be a number.',
+            'entries.*.hours.min'            => 'Hours must be greater than 0.',
+            'entries.*.hours.max'            => "Hours can't exceed 24 in a single entry.",
+            'entries.*.company_id.exists'    => 'Pick a valid company.',
+            'entries.*.employee_id.exists'   => 'Pick a valid employee.',
+            'entries.*.project_id.exists'    => 'Pick a valid project.',
+            'entries.*.task_id.exists'       => 'Pick a valid task.',
+        ];
+    }
+
     public function withValidator(Validator $validator): void
     {
         $validator->after(function (Validator $v): void {
