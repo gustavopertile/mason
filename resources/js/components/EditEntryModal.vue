@@ -137,6 +137,7 @@ async function save() {
   try {
     const updated = await updateTimeEntry(props.entry.id, form.value);
     refreshSummary();
+    toast.success('Entry updated with success.');
     emit('saved', updated);
   } catch (err) {
     if (err.response?.status === 422) {
@@ -155,6 +156,7 @@ async function destroy() {
   try {
     await deleteTimeEntry(props.entry.id);
     refreshSummary();
+    toast.success('Entry deleted with success.');
     emit('deleted', props.entry.id);
   } catch {
     toast.error("Couldn't delete the entry.");
