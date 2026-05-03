@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->timestamps();
 
-            $table->index('company_id');
+            $table->unique(['company_id', 'name']);
         });
     }
 

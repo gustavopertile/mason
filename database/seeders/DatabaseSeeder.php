@@ -22,7 +22,12 @@ class DatabaseSeeder extends Seeder
 
         $companies->each(function (Company $company) use ($employees) {
             Project::factory()->count(4)->for($company)->create();
-            Task::factory()->count(5)->for($company)->create();
+
+            // Tasks must be unique per company (company_id + name), so pick
+            // distinct names instead of letting the factory's randomElement
+            // produce collisions.
+            collect(['Development', 'Design', 'QA', 'Cleanup', 'Meeting'])
+                ->each(fn (string $name) => Task::factory()->for($company)->create(['name' => $name]));
 
             // Assign 4–6 random employees to this company.
             $companyEmployees = $employees->random(random_int(4, 6));

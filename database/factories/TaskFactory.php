@@ -16,12 +16,12 @@ class TaskFactory extends Factory
      */
     public function definition(): array
     {
+        // Tasks are unique per (company_id, name); use Faker's `unique()` so
+        // factory callers can create multiple tasks for the same company
+        // without colliding. Seeders/tests can still override `name`.
         return [
             'company_id' => Company::factory(),
-            'name' => fake()->randomElement([
-                'Development', 'Design', 'QA', 'Cleanup', 'Meeting',
-                'Code Review', 'Planning', 'Documentation',
-            ]),
+            'name' => fake()->unique()->words(2, true),
         ];
     }
 }
