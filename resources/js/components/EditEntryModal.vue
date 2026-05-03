@@ -1,11 +1,11 @@
 <script setup>
-import { ref, watch, computed, onMounted } from 'vue';
+import { ref, watch, onMounted, computed, inject } from 'vue';
 import {
   useCompanies,
   fetchEmployeesForCompany,
   fetchProjectsForCompany,
   fetchTasksForCompany,
-  fetchEmployeesForProject,
+  fetchProjectsForEmployee,
 } from '../composables/useCompanyData';
 import { updateTimeEntry, deleteTimeEntry } from '../composables/useTimeEntries';
 
@@ -18,6 +18,8 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'saved', 'deleted']);
 
+const refreshSummary = inject('refreshSummary', () => {});
+
 const { companies, load: loadCompanies } = useCompanies();
 onMounted(loadCompanies);
 
@@ -27,7 +29,7 @@ const form = ref({
   employee_id: props.entry.employee.id,
   project_id: props.entry.project.id,
   task_id: props.entry.task.id,
-  hours: Number(props.entry.hours),
+  hours: Math.round(Number(props.entry.hours)),
 });
 
 const projects = ref([]);
@@ -38,34 +40,32 @@ const saving = ref(false);
 const flash = ref(null);
 
 const fieldClass = (field) => [
-  'w-full rounded border bg-white px-2 py-1.5 text-sm text-slate-900 shadow-sm',
-  'focus:outline-none focus:ring-1',
-  errors.value[field]
-    ? 'border-red-400 focus:border-red-500 focus:ring-red-500'
-    : 'border-slate-300 focus:border-slate-500 focus:ring-slate-500',
+  'field tabular-mono',
+  errors.value[field] ? 'field-error' : '',
 ];
 
 const fieldError = (field) => errors.value[field]?.[0] ?? null;
 
 async function loadCompanyLists(companyId) {
   if (!companyId) return;
-  const [p, t, e] = await Promise.all([
-    fetchProjectsForCompany(companyId),
+  const [t, e] = await Promise.all([
     fetchTasksForCompany(companyId),
     fetchEmployeesForCompany(companyId),
   ]);
-  projects.value = p;
   tasks.value = t;
   employees.value = e;
 }
 
-async function refreshProjectEmployees(companyId, projectId) {
-  if (!companyId) return;
-  if (!projectId) {
-    employees.value = await fetchEmployeesForCompany(companyId);
+async function narrowProjectsToEmployee(companyId, employeeId) {
+  if (!companyId) {
+    projects.value = [];
     return;
   }
-  employees.value = await fetchEmployeesForProject(companyId, projectId);
+  if (!employeeId) {
+    projects.value = await fetchProjectsForCompany(companyId);
+    return;
+  }
+  projects.value = await fetchProjectsForEmployee(companyId, employeeId);
 }
 
 watch(
@@ -74,25 +74,24 @@ watch(
     if (id === prev) return;
     await loadCompanyLists(id);
     if (prev !== undefined) {
-      // Wipe child selections that no longer make sense (only when the
-      // user changes the company themselves — not on the initial load).
       form.value.employee_id = null;
       form.value.project_id = null;
       form.value.task_id = null;
+      projects.value = await fetchProjectsForCompany(id);
     } else {
-      // Initial load — narrow employees to the project the entry already uses.
-      await refreshProjectEmployees(id, form.value.project_id);
+      // Initial load: narrow to the employee already on the entry.
+      await narrowProjectsToEmployee(id, form.value.employee_id);
     }
   },
   { immediate: true },
 );
 
 watch(
-  () => form.value.project_id,
-  async (projectId) => {
-    await refreshProjectEmployees(form.value.company_id, projectId);
-    if (form.value.employee_id && !employees.value.some((e) => e.id === form.value.employee_id)) {
-      form.value.employee_id = null;
+  () => form.value.employee_id,
+  async (employeeId) => {
+    await narrowProjectsToEmployee(form.value.company_id, employeeId);
+    if (form.value.project_id && !projects.value.some((p) => p.id === form.value.project_id)) {
+      form.value.project_id = null;
     }
   },
 );
@@ -103,6 +102,7 @@ async function save() {
   saving.value = true;
   try {
     const updated = await updateTimeEntry(props.entry.id, form.value);
+    refreshSummary();
     emit('saved', updated);
   } catch (err) {
     if (err.response?.status === 422) {
@@ -121,6 +121,7 @@ async function destroy() {
   saving.value = true;
   try {
     await deleteTimeEntry(props.entry.id);
+    refreshSummary();
     emit('deleted', props.entry.id);
   } catch {
     flash.value = { type: 'error', message: "Couldn't delete the entry." };
@@ -136,139 +137,149 @@ function onBackdropClick(event) {
 
 <template>
   <div
-    class="fixed inset-0 z-40 flex items-start justify-center overflow-y-auto bg-slate-900/40 px-4 py-12"
+    class="modal-overlay fixed inset-0 z-40 flex items-start justify-center overflow-y-auto px-4 py-12"
+    style="background-color: rgba(15, 15, 15, 0.45);"
     @click="onBackdropClick"
     @keydown.esc="$emit('close')"
   >
-    <div class="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
-      <div class="mb-4 flex items-start justify-between">
+    <div class="modal-panel w-full max-w-xl rounded-lg border border-paper-line bg-paper p-6 shadow-xl">
+      <div class="mb-5 flex items-start justify-between">
         <div>
-          <h2 class="text-lg font-semibold">Edit time entry</h2>
-          <p class="mt-0.5 text-xs text-slate-500">Adjust any field. Validation runs server-side.</p>
+          <p class="text-xs text-ink-mute">Entry #{{ entry.id }}</p>
+          <h2 class="mt-0.5 text-xl font-semibold leading-tight tracking-[var(--tracking-tight)] text-ink">
+            Edit entry
+          </h2>
         </div>
         <button
           type="button"
-          class="text-slate-400 hover:text-slate-700"
+          class="rounded-md p-1 text-ink-mute transition-colors hover:bg-paper-tint hover:text-ink"
           aria-label="Close"
           @click="$emit('close')"
         >
-          ✕
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3.5 3.5L12.5 12.5M12.5 3.5L3.5 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
         </button>
       </div>
 
       <div
         v-if="flash"
         :class="[
-          'mb-4 rounded border px-3 py-2 text-sm',
-          flash.type === 'error' ? 'border-red-200 bg-red-50 text-red-800' : 'border-green-200 bg-green-50 text-green-800',
+          'mb-4 rounded-md border px-3 py-2 text-sm',
+          flash.type === 'error' ? 'border-danger bg-danger-bg text-danger' : 'border-success bg-success-bg text-success',
         ]"
       >
         {{ flash.message }}
       </div>
 
-      <div class="space-y-3">
+      <div class="grid grid-cols-1 gap-x-4 gap-y-3.5 sm:grid-cols-2">
         <div>
-          <label class="block text-xs font-medium text-slate-600">Company</label>
+          <label class="mb-1 block text-xs text-ink-mute">
+            Company
+          </label>
           <select
             :class="fieldClass('company_id')"
             :value="form.company_id ?? ''"
             @change="(e) => (form.company_id = e.target.value ? Number(e.target.value) : null)"
           >
-            <option value="">Select…</option>
-            <option v-for="company in companies" :key="company.id" :value="company.id">
-              {{ company.name }}
-            </option>
+            <option value="">—</option>
+            <option v-for="c in companies" :key="c.id" :value="c.id">{{ c.name }}</option>
           </select>
-          <p v-if="fieldError('company_id')" class="mt-1 text-xs text-red-600">{{ fieldError('company_id') }}</p>
+          <p v-if="fieldError('company_id')" class="mt-1 text-[11px] text-danger">{{ fieldError('company_id') }}</p>
         </div>
 
         <div>
-          <label class="block text-xs font-medium text-slate-600">Date</label>
+          <label class="mb-1 block text-xs text-ink-mute">
+            Date
+          </label>
           <input
             type="date"
             :class="fieldClass('date')"
             :value="form.date"
             @input="(e) => (form.date = e.target.value)"
           />
-          <p v-if="fieldError('date')" class="mt-1 text-xs text-red-600">{{ fieldError('date') }}</p>
+          <p v-if="fieldError('date')" class="mt-1 text-[11px] text-danger">{{ fieldError('date') }}</p>
         </div>
 
         <div>
-          <label class="block text-xs font-medium text-slate-600">Project</label>
-          <select
-            :class="fieldClass('project_id')"
-            :value="form.project_id ?? ''"
-            :disabled="!form.company_id"
-            @change="(e) => (form.project_id = e.target.value ? Number(e.target.value) : null)"
-          >
-            <option value="">Select…</option>
-            <option v-for="project in projects" :key="project.id" :value="project.id">
-              {{ project.name }}
-            </option>
-          </select>
-          <p v-if="fieldError('project_id')" class="mt-1 text-xs text-red-600">{{ fieldError('project_id') }}</p>
-        </div>
-
-        <div>
-          <label class="block text-xs font-medium text-slate-600">Employee</label>
+          <label class="mb-1 block text-xs text-ink-mute">
+            Employee
+          </label>
           <select
             :class="fieldClass('employee_id')"
             :value="form.employee_id ?? ''"
             :disabled="!form.company_id"
             @change="(e) => (form.employee_id = e.target.value ? Number(e.target.value) : null)"
           >
-            <option value="">Select…</option>
-            <option v-for="employee in employees" :key="employee.id" :value="employee.id">
-              {{ employee.name }}
-            </option>
+            <option value="">—</option>
+            <option v-for="e in employees" :key="e.id" :value="e.id">{{ e.name }}</option>
           </select>
-          <p v-if="fieldError('employee_id')" class="mt-1 text-xs text-red-600">{{ fieldError('employee_id') }}</p>
+          <p v-if="fieldError('employee_id')" class="mt-1 text-[11px] text-danger">{{ fieldError('employee_id') }}</p>
         </div>
 
         <div>
-          <label class="block text-xs font-medium text-slate-600">Task</label>
+          <label class="mb-1 block text-xs text-ink-mute">
+            Project
+          </label>
+          <select
+            :class="fieldClass('project_id')"
+            :value="form.project_id ?? ''"
+            :disabled="!form.company_id"
+            @change="(e) => (form.project_id = e.target.value ? Number(e.target.value) : null)"
+          >
+            <option value="">—</option>
+            <option v-for="p in projects" :key="p.id" :value="p.id">{{ p.name }}</option>
+          </select>
+          <p v-if="fieldError('project_id')" class="mt-1 text-[11px] text-danger">{{ fieldError('project_id') }}</p>
+        </div>
+
+        <div>
+          <label class="mb-1 block text-xs text-ink-mute">
+            Task
+          </label>
           <select
             :class="fieldClass('task_id')"
             :value="form.task_id ?? ''"
             :disabled="!form.company_id"
             @change="(e) => (form.task_id = e.target.value ? Number(e.target.value) : null)"
           >
-            <option value="">Select…</option>
-            <option v-for="task in tasks" :key="task.id" :value="task.id">
-              {{ task.name }}
-            </option>
+            <option value="">—</option>
+            <option v-for="t in tasks" :key="t.id" :value="t.id">{{ t.name }}</option>
           </select>
-          <p v-if="fieldError('task_id')" class="mt-1 text-xs text-red-600">{{ fieldError('task_id') }}</p>
+          <p v-if="fieldError('task_id')" class="mt-1 text-[11px] text-danger">{{ fieldError('task_id') }}</p>
         </div>
 
         <div>
-          <label class="block text-xs font-medium text-slate-600">Hours</label>
+          <label class="mb-1 block text-xs text-ink-mute">
+            Hours
+          </label>
           <input
             type="number"
-            step="0.25"
+            step="1"
             min="0"
             max="24"
-            :class="fieldClass('hours')"
+            inputmode="numeric"
+            :class="[fieldClass('hours'), 'text-right']"
             :value="form.hours ?? ''"
-            @input="(e) => (form.hours = e.target.value === '' ? null : Number(e.target.value))"
+            @input="(e) => (form.hours = e.target.value === '' ? null : Math.trunc(Number(e.target.value)))"
           />
-          <p v-if="fieldError('hours')" class="mt-1 text-xs text-red-600">{{ fieldError('hours') }}</p>
+          <p v-if="fieldError('hours')" class="mt-1 text-[11px] text-danger">{{ fieldError('hours') }}</p>
         </div>
       </div>
 
-      <div class="mt-6 flex items-center justify-between">
+      <div class="mt-6 flex items-center justify-between border-t border-paper-line pt-4">
         <button
           type="button"
-          class="text-sm text-red-600 hover:text-red-800"
+          class="btn btn-danger"
           :disabled="saving"
           @click="destroy"
         >
-          Delete
+          Delete entry
         </button>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-3">
           <button
             type="button"
-            class="rounded border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+            class="btn btn-secondary"
             :disabled="saving"
             @click="$emit('close')"
           >
@@ -276,11 +287,11 @@ function onBackdropClick(event) {
           </button>
           <button
             type="button"
-            class="rounded bg-slate-900 px-4 py-1.5 text-sm font-medium text-white hover:bg-slate-800 disabled:opacity-60"
+            class="btn btn-primary"
             :disabled="saving"
             @click="save"
           >
-            {{ saving ? 'Saving…' : 'Save' }}
+            {{ saving ? 'Saving…' : 'Save changes' }}
           </button>
         </div>
       </div>

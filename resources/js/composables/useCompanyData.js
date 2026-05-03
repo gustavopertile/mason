@@ -35,3 +35,6 @@ export const fetchTasksForCompany = (companyId) =>
 
 export const fetchEmployeesForProject = (companyId, projectId) =>
   cachedGet(`/companies/${companyId}/projects/${projectId}/employees`);
+
+export const fetchProjectsForEmployee = (companyId, employeeId) =>
+  cachedGet(`/companies/${companyId}/employees/${employeeId}/projects`);

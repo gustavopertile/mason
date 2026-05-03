@@ -7,6 +7,144 @@
 @source '../**/*.vue';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    /* Notion-inspired: white canvas, warm near-black ink, hairline borders. */
+    --color-paper: #ffffff;
+    --color-paper-soft: #ffffff;
+    --color-paper-line: #ebebea;
+    --color-paper-line-strong: #d3d2cf;
+    --color-paper-tint: #f7f6f3;
+    --color-paper-hover: #f1f1ef;
+
+    --color-ink: #37352f;
+    --color-ink-soft: #6f6e69;
+    --color-ink-mute: #9b9a97;
+
+    --color-accent: #2383e2;
+    --color-accent-soft: #5fa3e8;
+    --color-accent-bg: #e7f3fc;
+
+    --color-danger: #d44c47;
+    --color-danger-bg: #fbecec;
+    --color-success: #448361;
+    --color-success-bg: #ddedea;
+
+    --font-sans: 'Geist', ui-sans-serif, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --font-display: 'Geist', ui-sans-serif, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+    --tracking-display: -0.022em;
+    --tracking-tight: -0.011em;
+    --tracking-uppercase: 0.04em;
+}
+
+.tabular-mono {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+}
+
+body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-feature-settings: 'ss01' 1, 'cv11' 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+@keyframes rise {
+    from {
+        opacity: 0;
+        transform: translateY(0.25rem);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.rise {
+    animation: rise 0.35s ease-out both;
+}
+
+.tab-underline {
+    position: absolute;
+    bottom: -1px;
+    height: 2px;
+    background: var(--color-ink);
+    transition: transform 0.2s ease, width 0.2s ease;
+}
+
+@keyframes modal-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes modal-rise {
+    from { opacity: 0; transform: translateY(0.5rem) scale(0.99); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modal-overlay {
+    animation: modal-fade 0.15s ease-out both;
+}
+
+.modal-panel {
+    animation: modal-rise 0.2s ease-out both;
+}
+
+/* Inputs — Notion-style: hairline borders, soft rounded corners, gentle focus. */
+.field {
+    @apply w-full rounded-md border border-paper-line bg-paper px-2.5 py-1.5 text-sm text-ink transition-colors;
+}
+.field:hover {
+    @apply border-paper-line-strong;
+}
+.field:focus {
+    @apply outline-none border-accent;
+    box-shadow: 0 0 0 3px rgba(35, 131, 226, 0.18);
+}
+.field-error {
+    @apply border-danger;
+}
+.field-error:focus {
+    @apply border-danger;
+    box-shadow: 0 0 0 3px rgba(212, 76, 71, 0.18);
+}
+
+/* Inline cell field — borderless, reveals border on hover/focus. */
+.cell-field {
+    @apply w-full rounded-md border border-transparent bg-transparent px-2 py-1 text-sm text-ink transition-colors;
+}
+.cell-field:hover {
+    @apply bg-paper-tint;
+}
+.cell-field:focus {
+    @apply outline-none border-accent bg-paper;
+    box-shadow: 0 0 0 3px rgba(35, 131, 226, 0.18);
+}
+.cell-field-error {
+    @apply border-danger;
+}
+.cell-field-error:focus {
+    @apply border-danger;
+    box-shadow: 0 0 0 3px rgba(212, 76, 71, 0.18);
+}
+
+/* Buttons — Notion's clean rounded rectangles. */
+.btn {
+    @apply inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm font-medium transition-colors;
+}
+.btn-primary {
+    @apply border-ink bg-ink text-paper hover:bg-ink-soft hover:border-ink-soft;
+}
+.btn-primary:disabled {
+    @apply opacity-50 cursor-not-allowed hover:bg-ink hover:border-ink;
+}
+.btn-secondary {
+    @apply border-paper-line bg-paper text-ink hover:bg-paper-tint;
+}
+.btn-ghost {
+    @apply border-transparent bg-transparent text-ink-soft hover:bg-paper-tint hover:text-ink;
+}
+.btn-danger {
+    @apply border-transparent bg-transparent text-danger hover:bg-danger-bg;
 }

@@ -1,5 +1,7 @@
 <script setup>
-defineProps({
+import { ref, watch, nextTick, onMounted } from 'vue';
+
+const props = defineProps({
   tabs: {
     type: Array,
     required: true,
@@ -10,24 +12,46 @@ defineProps({
   },
 });
 
-defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue']);
+
+const navRef = ref(null);
+const underlineStyle = ref({ width: '0px', transform: 'translateX(0)' });
+
+async function moveUnderline() {
+  await nextTick();
+  if (!navRef.value) return;
+  const active = navRef.value.querySelector(`[data-tab="${props.modelValue}"]`);
+  if (!active) return;
+  underlineStyle.value = {
+    width: `${active.offsetWidth}px`,
+    transform: `translateX(${active.offsetLeft}px)`,
+  };
+}
+
+onMounted(moveUnderline);
+watch(() => props.modelValue, moveUnderline);
 </script>
 
 <template>
-  <nav class="flex gap-1 border-b border-slate-200">
-    <button
-      v-for="tab in tabs"
-      :key="tab.id"
-      type="button"
-      :class="[
-        'px-4 py-2 text-sm font-medium -mb-px border-b-2 transition-colors',
-        modelValue === tab.id
-          ? 'border-slate-900 text-slate-900'
-          : 'border-transparent text-slate-500 hover:text-slate-800 hover:border-slate-300',
-      ]"
-      @click="$emit('update:modelValue', tab.id)"
-    >
-      {{ tab.label }}
-    </button>
+  <nav
+    ref="navRef"
+    class="relative flex items-end border-b border-paper-line"
+  >
+    <div class="flex">
+      <button
+        v-for="tab in tabs"
+        :key="tab.id"
+        type="button"
+        :data-tab="tab.id"
+        :class="[
+          'relative px-3 py-2.5 text-sm font-medium transition-colors',
+          modelValue === tab.id ? 'text-ink' : 'text-ink-soft hover:text-ink',
+        ]"
+        @click="emit('update:modelValue', tab.id)"
+      >
+        {{ tab.label }}
+      </button>
+    </div>
+    <span class="tab-underline" :style="underlineStyle"></span>
   </nav>
 </template>
