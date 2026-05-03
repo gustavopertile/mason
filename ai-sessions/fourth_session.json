@@ -1,0 +1,2249 @@
+╭─── Claude Code v2.1.123 ─────────────────────────────────────────────────────╮
+│                                                    │ Tips for getting        │
+│                Welcome back Gustavo!               │ started                 │
+│                                                    │ Run /init to create a … │
+│                       ▐▛███▜▌                      │ ─────────────────────── │
+│                      ▝▜█████▛▘                     │ What's new              │
+│                        ▘▘ ▝▝                       │ The `/model` picker no… │
+│  Opus 4.7 · Claude Pro · gu.follador@gmail.com's   │ - Added `claude projec… │
+│  Organization                                      │ `--dangerously-skip-pe… │
+│              ~/workplace/extras/mason              │ /release-notes for more │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+❯ /clear                                                                        
+  ⎿  (no content)
+
+❯ /model 
+  ⎿  Kept model as Opus 4.7
+
+❯ everything on this /Users/gustavopertile/Downloads/Engineering\ Test\         
+  Exercise_\ Laravel\ +\ Vue\ Time\ Entry\ Interface.docx document is           
+  implemented on this project? every rule and required things are right?        
+                                                                                
+  have to be only missing the super bonus, other things must be perfectly       
+  implemented                                                                   
+
+  Read 1 file, listed 1 directory (ctrl+o to expand)
+
+⏺ Bash(cd /tmp && unzip -o "/Users/gustavopertile/Downloads/Engineering Test
+      Exercise_ Laravel + Vue Time Entry Interface.docx" -d /tmp/docx_extract >
+      /dev/null && cat…)
+  ⎿  Engineering
+     Test
+     Exercise:
+     … +147 lines (ctrl+o to expand)
+  ⎿  Shell cwd was reset to /Users/gustavopertile/workplace/extras/mason
+
+⏺ Bash(cat /tmp/docx_extract/word/document.xml | sed 's/<[^>]*>/ /g' | tr -s ' '
+       '\n' | grep -v '^$' | sed -n '500,1500p')
+  ⎿  Employee
+     Project
+     Task
+     … +130 lines (ctrl+o to expand)
+
+⏺ I have the full requirements. Let me audit the project against them. I'll
+  dispatch a thorough exploration to gather everything.
+
+  Read 1 file, listed 3 directories (ctrl+o to expand)
+
+⏺ Let me verify by reading the actual implementation in parallel.
+
+  Read 23 files, listed 1 directory (ctrl+o to expand)
+
+⏺ Backend looks complete. Let me verify the frontend.
+
+  Read 13 files (ctrl+o to expand)
+
+⏺ Let me run the tests and verify the conversation.json file.
+
+⏺ Bash(php artisan test 2>&1 | tail -60)
+  ⎿  {
+       "tool": "phpunit",
+       "result": "passed",
+     … +5 lines (ctrl+o to expand)
+
+⏺ Bash(python3 -c "import json; data=json.load(open('/Users/gustavopertile/workp
+      lace/extras/mason/conversation.json')); print('valid JSON, top-level
+      keys:', list(data.…)
+  ⎿  valid JSON, top-level keys: list with 731 items
+
+  Listed 1 directory (ctrl+o to expand)
+
+⏺ All 30 tests pass. Here's the audit against the spec.
+
+  Required (must be perfect)
+
+  Requirement: Laravel + Vue 3 Composition API
+  Status: ✅
+  Evidence: every .vue uses <script setup>
+  ────────────────────────────────────────
+  Requirement: 5 tables (companies, employees, tasks, projects, time_entries) +
+    pivots
+  Status: ✅
+  Evidence: database/migrations/
+  ────────────────────────────────────────
+  Requirement: Company → many employees, employee → many companies
+  Status: ✅
+  Evidence: company_employee pivot, Employee::companies(), Company::employees()
+  ────────────────────────────────────────
+  Requirement: Company → own tasks/projects (HasMany)
+  Status: ✅
+  Evidence: Company::tasks(), ::projects(), FK on each
+  ────────────────────────────────────────
+  Requirement: Tasks company-specific, not project-specific
+  Status: ✅
+  Evidence: tasks has only company_id
+  ────────────────────────────────────────
+  Requirement: Employees ↔ projects
+  Status: ✅
+  Evidence: employee_project pivot
+  ────────────────────────────────────────
+  Requirement: TimeEntry belongs to company/employee/project/task + date
+  Status: ✅
+  Evidence: TimeEntry model + migration
+  ────────────────────────────────────────
+  Requirement: Migrations, Models, Relationships, Seeders, API, Frontend
+  Status: ✅
+  Evidence: all present
+  ────────────────────────────────────────
+  Requirement: Business rule: one project per (employee, date), multiple tasks
+  OK
+  Status: ✅
+  Evidence: StoreTimeEntriesRequest::validateOneProjectPerEmployeePerDate —
+    checks both within batch and against existing rows; same logic in
+    UpdateTimeEntryRequest; covered by passing tests
+  ────────────────────────────────────────
+  Requirement: Server-side enforcement (not only frontend)
+  Status: ✅
+  Evidence: Form Requests run on every store/update
+  ────────────────────────────────────────
+  Requirement: Two tabs: New Entries / History
+  Status: ✅
+  Evidence: Tabs.vue, App.vue:54-55
+  ────────────────────────────────────────
+  Requirement: Dropdown at top with "All" default
+  Status: ✅
+  Evidence: App.vue:9 selectedCompanyId = ref(null) → "All"
+  ────────────────────────────────────────
+  Requirement: Selected company impacts both tabs
+  Status: ✅
+  Evidence: New Entries pre-fills it; History filters
+  ────────────────────────────────────────
+  Requirement: Row order: Company, Date, Employee, Project, Task, Hours
+  Status: ✅
+  Evidence: EntryRow.vue td order matches
+  ────────────────────────────────────────
+  Requirement: Add rows before submit
+  Status: ✅
+  Evidence: addRow()
+  ────────────────────────────────────────
+  Requirement: Cascading lookups via API (employees/projects/tasks per company)
+  Status: ✅
+  Evidence: /api/companies/{id}/{employees,projects,tasks} + reciprocal narrow
+    endpoints
+  ────────────────────────────────────────
+  Requirement: History read-only table with all fields
+  Status: ✅
+  Evidence: HistoryTab.vue
+  ────────────────────────────────────────
+  Requirement: REST conventions
+  Status: ✅
+  Evidence: resource controllers, JSON Resources, proper verbs
+  ────────────────────────────────────────
+  Requirement: Tab key navigation in spec order
+  Status: ✅
+  Evidence: DOM order matches spec; native Tab works
+  ────────────────────────────────────────
+  Requirement: Performance (caching, indexes, eager loading)
+  Status: ✅
+  Evidence: promise cache in useApi.js, indexes on (employee_id,date) &
+    (company_id,date), with() on every list
+  ────────────────────────────────────────
+  Requirement: README + conversation.json (valid, 731 messages)
+  Status: ✅
+  Evidence: both at repo root
+
+  Bonuses — all five implemented
+
+  - ✅ Edit existing entries — EditEntryModal.vue + PUT/DELETE 
+  /api/time-entries/{id} + UpdateTimeEntryRequest
+  - ✅ Faster entry — Duplicate button per row + ⌘D (last) / ⌘B (new) shortcuts
+  - ✅ Better validation UX — backend returns entries.{i}.{field} errors;
+  frontend groups them by row and renders red borders + inline messages
+  - ✅ Summary totals — SummaryCard with hours-this-month, total hours, entries,
+   employees/projects/tasks counts (re-scopes when company changes)
+  - ✅ History improvements — debounced search, from/to date filter, company
+  filter, pagination
+  - ✅ Keyboard shortcuts — ⌘D duplicate, ⌘B new row, ⌘↵ submit
+
+  Super Bonus
+
+  - ❌ AI-assisted natural-language entry — not implemented (as expected)
+
+  Issues worth fixing
+
+  1. README.md:84-87 is out of date. It claims "Edit / delete from history" and
+  "Summary totals beyond row count + sum" are not implemented — but both are.
+  The reviewer will read this and think the bonuses are missing. Update that
+  "What's intentionally not implemented" section to list only the AI
+  super-bonus.
+  2. Same section: the "Project layout" snippet lists # CompanyFilter, Tabs, 
+  NewEntriesTab, EntryRow, HistoryTab and # useApi, useCompanyData, 
+  useTimeEntries — missing EditEntryModal, SummaryCard, useSummary. Cosmetic but
+   same root cause.
+  3. resources/js/components/CompanyFilter.vue is dead code — the company
+  selector is now inline in SummaryCard.vue. Safe to delete.
+  4. Minor: routes/api.php:16 exposes
+  companies/{company}/employees/{employee}/projects but the README's API table
+  doesn't list it. Either document it or drop it.
+
+  Bottom line: every required item and every bonus except the Super Bonus is
+  implemented and tested. The only real correctness issue is that the README
+  understates what's been built — easy fix.
+
+✻ Cogitated for 2m 34s
+
+❯ perfect, update read me with all the requirements and with that are           
+  implemented on the project                                                    
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ I'll rewrite the README so it accurately maps every spec requirement to its
+  implementation, lists all bonuses correctly, and fixes the stale sections.
+
+⏺ Write(README.md)
+  ⎿  Added 167 lines, removed 43 lines
+       44  php artisan test
+       45  ```
+       46  
+       47 -23 feature/unit tests cover the data model, lookup endpoints, 
+          -and every business-rule path.                                 
+       47 +30 feature/unit tests cover the data model, lookup endpoints, 
+          +every business-rule path, and the edit/delete/filter flows.   
+       48  
+       49  ---
+       50  
+       51 -## API surface                                                
+       51 +## Spec coverage                                              
+       52  
+       53 -All endpoints live under `/api`.                              
+       53 +Every requirement in the exercise brief, mapped to where it li
+          +ves in the codebase.                                          
+       54  
+       55 -| Method | Path | Description |                               
+       55 +### Tech stack                                                
+       56 +                                                              
+       57 +| Requirement | Status | Where |                              
+       58  |---|---|---|
+       57 -| GET | `/api/companies` | All companies. |                   
+       58 -| GET | `/api/companies/{company}/employees` | Employees that 
+          -belong to a company. |                                        
+       59 -| GET | `/api/companies/{company}/projects` | Projects owned b
+          -y a company. |                                                
+       60 -| GET | `/api/companies/{company}/tasks` | Tasks defined by a 
+          -company. |                                                    
+       61 -| GET | `/api/companies/{company}/projects/{project}/employees
+          -` | Employees on the project who are also on the company (narr
+          -ows the employee picker once a project is selected). |        
+       62 -| GET | `/api/time-entries?company_id=<id>` | List entries; `c
+          -ompany_id` is optional and filters the list. |                
+       63 -| POST | `/api/time-entries` | Batched create. Body: `{ "entri
+          -es": [ { company_id, employee_id, project_id, task_id, date, h
+          -ours }, ... ] }`. Returns `201` with the created entries, or `
+          -422` with `entries.{i}.{field}` keyed errors. |               
+       59 +| Laravel | ✅ | Laravel 11, app/, routes/, etc. |            
+       60 +| Vue with the Composition API | ✅ | every `.vue` file uses `
+          +<script setup>` |                                             
+       61 +| No authentication required | ✅ | open routes under `/api` |
+       62 +| Standard Laravel setup commands | ✅ | `composer setup` + `c
+          +omposer dev` |                                                
+       63  
+       65 -## Business rules (server-enforced)                           
+       64 +### Database structure                                        
+       65  
+       67 -`StoreTimeEntriesRequest` enforces all five rules — both withi
+          -n the submitted batch and against existing rows:              
+       66 +| Required table | Status | Migration |                       
+       67 +|---|---|---|                                                 
+       68 +| `companies` | ✅ | `2026_05_02_163128_create_companies_table
+          +.php` |                                                       
+       69 +| `employees` | ✅ | `2026_05_02_163129_create_employees_table
+          +.php` |                                                       
+       70 +| `projects` | ✅ | `2026_05_02_163129_create_projects_table.p
+          +hp` |                                                         
+       71 +| `tasks` | ✅ | `2026_05_02_163129_create_tasks_table.php` | 
+       72 +| `time_entries` | ✅ | `2026_05_02_163133_create_time_entries
+          +_table.php` |                                                 
+       73 +| `company_employee` (pivot) | ✅ | `2026_05_02_163131_create_
+          +company_employee_table.php` |                                 
+       74 +| `employee_project` (pivot) | ✅ | `2026_05_02_163132_create_
+          +employee_project_table.php` |                                 
+       75  
+       76 +### Relationships                                             
+       77 +                                                              
+       78 +| Required relationship | Status | Where |                    
+       79 +|---|---|---|                                                 
+       80 +| A company has many employees | ✅ | `Company::employees()` (
+          +BelongsToMany via `company_employee`) |                       
+       81 +| An employee can belong to multiple companies | ✅ | `Employe
+          +e::companies()` (BelongsToMany) |                             
+       82 +| A company has its own set of projects | ✅ | `Company::proje
+          +cts()` (HasMany), `projects.company_id` |                     
+       83 +| A company has its own set of tasks | ✅ | `Company::tasks()`
+          + (HasMany), `tasks.company_id` |                              
+       84 +| Tasks are company-specific, not project-specific | ✅ | `tas
+          +ks` has only `company_id` — no `project_id` column |          
+       85 +| Employees are assigned to one or more projects | ✅ | `Emplo
+          +yee::projects()` (BelongsToMany via `employee_project`) |     
+       86 +| A time entry belongs to a company, employee, project, task, 
+          +and date | ✅ | `TimeEntry` model + 4 FKs and a `date` column 
+          +|                                                             
+       87 +                                                              
+       88 +### Required artifacts                                        
+       89 +                                                              
+       90 +| Required | Status | Where |                                 
+       91 +|---|---|---|                                                 
+       92 +| Migrations | ✅ | `database/migrations/` |                  
+       93 +| Models | ✅ | `app/Models/` |                               
+       94 +| Relationships | ✅ | declared on each model |               
+       95 +| Seeders | ✅ | `database/seeders/DatabaseSeeder.php` (3 comp
+          +anies, 8 employees, projects, tasks, ~2 weeks of entries) |   
+       96 +| API endpoints | ✅ | see "API surface" below |              
+       97 +| Frontend components | ✅ | `resources/js/components/` |     
+       98 +                                                              
+       99 +### Business rules (server-enforced)                          
+      100 +                                                              
+      101 +`StoreTimeEntriesRequest` and `UpdateTimeEntryRequest` enforce
+          + all five rules — both within the submitted batch and against 
+          +existing rows:                                                
+      102 +                                                              
+      103  1. The employee must belong to the selected company.
+      104  2. The project must belong to the selected company.
+      105  3. The task must belong to the selected company.
+      106  4. The employee must be assigned to the selected project.
+       73 -5. An employee cannot have time on more than one project for a
+          - given date. They *can* split that day across multiple tasks w
+          -ithin the same project.                                       
+      107 +5. **An employee cannot have time on more than one project for
+          + a given date.** They *can* split that day across multiple tas
+          +ks within the same project.                                   
+      108  
+       75 -Validation errors come back keyed per row and field (`entries.
+          -0.project_id`, `entries.2.hours`, …) so the frontend can highl
+          -ight exactly the offending cell.                              
+      109 +Validation errors come back keyed per row and field (`entries.
+          +0.project_id`, `entries.2.hours`, …) so the frontend can highl
+          +ight the exact offending cell.                                
+      110  
+       77 -## UX choices                                                 
+      111 +### Interface                                                 
+      112  
+       79 -- The top-level company selector defaults to **All** (per spec
+          -). When set to a specific company:                            
+       80 -  - New Entries pre-fills that company on rows whose company h
+          -asn't been chosen yet (never overwrites a manual selection).  
+       81 -  - History narrows to that company's entries.                
+       82 -- Per-row validation errors render inline with red borders and
+          - a one-line message under the field.                          
+       83 -- Tab moves through fields in the spec order (Company → Date →
+          - Employee → Project → Task → Hours).                          
+       84 -- `⌘D` / `Ctrl+D` duplicates the last row; `⌘Enter` / `Ctrl+En
+          -ter` submits.                                                 
+       85 -- Each row has explicit "Duplicate" and "Remove" buttons for m
+          -ouse users.                                                   
+      113 +| Requirement | Status | Where |                              
+      114 +|---|---|---|                                                 
+      115 +| Two tabs: New Entries / History | ✅ | `Tabs.vue`, `App.vue`
+          + |                                                            
+      116 +| Top-level dropdown: specific company or "All" | ✅ | inside 
+          +`SummaryCard.vue`, bound via `provide`/`inject` |             
+      117 +| Default value is "All" | ✅ | `App.vue` — `selectedCompanyId
+          + = ref(null)` |                                               
+      118 +| Selected value impacts both tabs | ✅ | New Entries pre-fill
+          +s the company on empty rows; History filters and the SummaryCa
+          +rd re-scopes |                                                
+      119  
+       87 -## Performance notes                                          
+      120 +### New Entries tab                                           
+      121  
+       89 -- Lookup endpoints (`employees`, `projects`, `tasks`) are scop
+          -ed per company so payloads stay small even with many companies
+          -.                                                             
+       90 -- The frontend caches lookup responses in-memory for the lifet
+          -ime of the page (`composables/useApi.js`). Concurrent rows ope
+          -ning the same company share a single in-flight request via a p
+          -romise cache.                                                 
+      122 +| Requirement | Status |                                      
+      123 +|---|---|                                                     
+      124 +| Table where each row is a new time entry | ✅ |             
+      125 +| Field order: Company, Date, Employee, Project, Task, Hours |
+          + ✅ (`EntryRow.vue` cell order matches) |                     
+      126 +| User can add more rows before submit | ✅ (`Add row` button 
+          ++ ⌘B) |                                                       
+      127 +| Submit posts entries to the API | ✅ (`POST /api/time-entrie
+          +s`, batched) |                                                
+      128 +| Employee list depends on selected company | ✅ (`/api/compan
+          +ies/{id}/employees`) |                                        
+      129 +| Project list depends on selected company | ✅ (`/api/compani
+          +es/{id}/projects`) |                                          
+      130 +| Task list depends on selected company | ✅ (`/api/companies/
+          +{id}/tasks`) |                                                
+      131 +| Cannot submit invalid combinations | ✅ (frontend disables, 
+          +backend validates) |                                          
+      132 +                                                              
+      133 +The employee/project pickers also narrow each other reciprocal
+          +ly: picking an employee filters the project list to ones they'
+          +re on, and vice versa, via `/api/companies/{id}/employees/{id}
+          +/projects` and `/api/companies/{id}/projects/{id}/employees`. 
+      134 +                                                              
+      135 +### History tab                                               
+      136 +                                                              
+      137 +| Requirement | Status |                                      
+      138 +|---|---|                                                     
+      139 +| Read-only table of all submitted entries | ✅ |             
+      140 +| Includes Company, Date, Employee, Project, Task, Hours | ✅ 
+          +|                                                             
+      141 +                                                              
+      142 +### API conventions                                           
+      143 +                                                              
+      144 +REST: resource controllers, plural URIs, proper HTTP verbs, `J
+          +sonResource` for output, Form Requests for input. See "API sur
+          +face" below.                                                  
+      145 +                                                              
+      146 +### UX / keyboard                                             
+      147 +                                                              
+      148 +| Requirement | Status |                                      
+      149 +|---|---|                                                     
+      150 +| Clean, usable, polished design | ✅ |                       
+      151 +| Tab key navigates fields in spec order | ✅ (DOM order = Com
+          +pany → Date → Employee → Project → Task → Hours) |            
+      152 +| Efficient multi-row entry | ✅ (Add/Duplicate/Remove buttons
+          + + ⌘B / ⌘D / ⌘↵) |                                            
+      153 +                                                              
+      154 +### Performance considerations                                
+      155 +                                                              
+      156 +- Lookup endpoints (`employees`, `projects`, `tasks`) are **sc
+          +oped per company** so payloads stay small even with many compa
+          +nies.                                                         
+      157 +- The frontend caches lookup responses in-memory for the lifet
+          +ime of the page (`composables/useApi.js`). Concurrent rows ope
+          +ning the same company share a single in-flight request via a *
+          +*promise cache**, so cascading dropdowns never duplicate reque
+          +sts.                                                          
+      158 +- The cache is invalidated for `/time-entries` whenever a row 
+          +is created, updated, or deleted.                              
+      159  - `time_entries` carries indexes on `(employee_id, date)` for 
+           the business-rule lookup and `(company_id, date)` for history 
+           filtering.
+       92 -- The list endpoint eager-loads all four belongs-to relations 
+          -to avoid N+1.                                                 
+       93 -- For larger datasets, the History endpoint should add paginat
+          -ion (`paginate(50)`) and the dropdowns should switch to typeah
+          -ead/search. Stubbed for now to keep the surface small.        
+      160 +- The list endpoint **eager-loads** all four belongs-to relati
+          +ons to avoid N+1.                                             
+      161 +- The History endpoint is **paginated** server-side (`per_page
+          +` configurable, default 20, capped at 100).                   
+      162 +- For very large datasets, dropdowns would need to switch to t
+          +ypeahead/search rather than pre-loading the full list. Out of 
+          +scope here.                                                   
+      163  
+      164 +### Submission requirements                                   
+      165 +                                                              
+      166 +| Required | Status | Where |                                 
+      167 +|---|---|---|                                                 
+      168 +| Laravel backend code | ✅ | `app/`, `routes/`, `database/` |
+      169 +| Vue frontend (Composition API) | ✅ | `resources/js/` |     
+      170 +| Migrations | ✅ | `database/migrations/` |                  
+      171 +| Seeders | ✅ | `database/seeders/` |                        
+      172 +| Models and relationships | ✅ | `app/Models/` |             
+      173 +| API endpoints | ✅ | `routes/api.php` |                     
+      174 +| README explaining how to run | ✅ | this file |             
+      175 +| JSON export of the AI conversation | ✅ | `conversation.json
+          +` (root) + `ai-sessions/` |                                   
+      176 +                                                              
+      177 +---                                                           
+      178 +                                                              
+      179 +## Bonuses                                                    
+      180 +                                                              
+      181 +| Bonus | Status | Where |                                    
+      182 +|---|---|---|                                                 
+      183 +| Edit existing entries | ✅ | `EditEntryModal.vue`, `PUT /api
+          +/time-entries/{id}`, `UpdateTimeEntryRequest`. Same validation
+          + as create. Delete is also wired up (`DELETE /api/time-entries
+          +/{id}`). |                                                    
+      184 +| Faster data entry | ✅ | Per-row "Duplicate" button; `⌘D` / 
+          +`Ctrl+D` duplicates the last row; `⌘B` / `Ctrl+B` adds a new r
+          +ow; submitted-row state is preserved on validation errors. |  
+      185 +| Better validation UX | ✅ | The backend returns `entries.{i}
+          +.{field}` errors; the frontend groups them by row and renders 
+          +red borders + a one-line message under the offending field. A 
+          +flash banner above the table summarises the failure. |        
+      186 +| Summary totals | ✅ | `SummaryCard.vue` shows hours-this-mon
+          +th, total hours, employees, projects, tasks — all re-scoped wh
+          +en the company filter changes. Powered by `GET /api/summary?co
+          +mpany_id=`. |                                                 
+      187 +| History improvements | ✅ | Debounced text search across com
+          +pany/employee/project/task; from/to date filter; company filte
+          +r (via the top-level selector); server-side pagination with a 
+          +windowed page picker. |                                       
+      188 +| Keyboard shortcuts | ✅ | `⌘D` duplicate last row, `⌘B` new 
+          +row, `⌘↵` submit. Native Tab navigation in spec order. |      
+      189 +| **Super Bonus: AI-assisted natural-language entry** | ❌ | I
+          +ntentionally not implemented. The rest of the app is stable gr
+          +oundwork for it. |                                            
+      190 +                                                              
+      191 +---                                                           
+      192 +                                                              
+      193 +## API surface                                                
+      194 +                                                              
+      195 +All endpoints live under `/api`.                              
+      196 +                                                              
+      197 +| Method | Path | Description |                               
+      198 +|---|---|---|                                                 
+      199 +| GET | `/api/companies` | All companies. |                   
+      200 +| GET | `/api/companies/{company}/employees` | Employees that 
+          +belong to a company. |                                        
+      201 +| GET | `/api/companies/{company}/projects` | Projects owned b
+          +y a company. |                                                
+      202 +| GET | `/api/companies/{company}/tasks` | Tasks defined by a 
+          +company. |                                                    
+      203 +| GET | `/api/companies/{company}/projects/{project}/employees
+          +` | Employees on the project who are also on the company (narr
+          +ows the employee picker once a project is selected). |        
+      204 +| GET | `/api/companies/{company}/employees/{employee}/project
+          +s` | Projects in the company that the employee is on (narrows 
+          +the project picker once an employee is selected). |           
+      205 +| GET | `/api/summary?company_id=<id>` | Aggregates for the Su
+          +mmaryCard. `company_id` optional. |                           
+      206 +| GET | `/api/time-entries` | List entries. Query params: `com
+          +pany_id`, `from`, `to`, `search`, `page`, `per_page`. Paginate
+          +d. |                                                          
+      207 +| POST | `/api/time-entries` | Batched create. Body: `{ "entri
+          +es": [ { company_id, employee_id, project_id, task_id, date, h
+          +ours }, ... ] }`. Returns `201` with the created entries, or `
+          +422` with `entries.{i}.{field}` keyed errors. |               
+      208 +| PUT | `/api/time-entries/{time_entry}` | Update a single ent
+          +ry. Same validation as create. |                              
+      209 +| DELETE | `/api/time-entries/{time_entry}` | Delete a single 
+          +entry. Returns `204`. |                                       
+      210 +                                                              
+      211 +---                                                           
+      212 +                                                              
+      213  ## What's intentionally not implemented
+      214  
+       97 -- AI-assisted natural-language entry (Super Bonus). Will be ad
+          -ded in a follow-up — the rest of the app is stable groundwork 
+          -for it.                                                       
+       98 -- Edit / delete from history.                                 
+       99 -- Summary totals beyond row count + sum.                      
+      100 -- Authentication (out of scope per spec).                     
+      215 +- **AI-assisted natural-language entry** (Super Bonus). The re
+          +st of the app is stable groundwork for it.                    
+      216 +- **Authentication** — out of scope per spec.                 
+      217  
+      218  ## Project layout (relevant pieces)
+      219  
+      220  ```
+      221  app/
+      222    Http/
+      107 -    Controllers/Api/    # one controller per resource         
+      108 -    Requests/StoreTimeEntriesRequest.php                      
+      109 -    Resources/TimeEntryResource.php                           
+      110 -  Models/               # Company, Employee, Project, Task, Ti
+          -meEntry                                                       
+      223 +    Controllers/Api/        # CompanyController, EmployeeContr
+          +oller, ProjectController,                                     
+      224 +                            # TaskController, SummaryControlle
+          +r, TimeEntryController                                        
+      225 +    Requests/               # StoreTimeEntriesRequest, UpdateT
+          +imeEntryRequest                                               
+      226 +    Resources/              # TimeEntryResource               
+      227 +  Models/                   # Company, Employee, Project, Task
+          +, TimeEntry                                                   
+      228  database/
+      112 -  migrations/           # 7 migrations                        
+      113 -  factories/            # one per model                       
+      229 +  migrations/               # 7 migrations (companies, employe
+          +es, projects, tasks,                                          
+      230 +                            #   company_employee, employee_pro
+          +ject, time_entries)                                           
+      231 +  factories/                # one per model                   
+      232    seeders/DatabaseSeeder.php
+      233  resources/
+      234    js/
+      235      App.vue
+      118 -    components/         # CompanyFilter, Tabs, NewEntriesTab, 
+          -EntryRow, HistoryTab                                          
+      119 -    composables/        # useApi (axios + cache), useCompanyDa
+          -ta, useTimeEntries                                            
+      236 +    app.js                                                    
+      237 +    components/             # SummaryCard, Tabs, NewEntriesTab
+          +, EntryRow,                                                   
+      238 +                            #   HistoryTab, EditEntryModal, Co
+          +mpanyFilter                                                   
+      239 +    composables/            # useApi (axios + promise cache), 
+      240 +                            #   useCompanyData, useTimeEntries
+          +, useSummary                                                  
+      241    views/app.blade.php
+      242  routes/
+      243    api.php
+      244    web.php
+      245  tests/
+      125 -  Feature/              # CompanyScopedListsTest, TimeEntryApi
+          -Test, TimeEntryStoreTest                                      
+      246 +  Feature/                  # CompanyScopedListsTest, TimeEntr
+          +yApiTest,                                                     
+      247 +                            #   TimeEntryStoreTest, TimeEntryU
+          +pdateDeleteTest,                                              
+      248 +                            #   TimeEntryFiltersTest          
+      249    Unit/RelationshipsTest.php
+      127 -docs/PLAN.md            # original implementation plan        
+      128 -conversation.json       # AI conversation export              
+      250 +docs/PLAN.md                # original implementation plan    
+      251 +conversation.json           # AI conversation export          
+      252 +ai-sessions/                # additional session exports      
+      253  ```
+
+⏺ README rewritten. Key changes:
+
+  - New "Spec coverage" section — every requirement from the brief mapped to its
+   implementation file with a status column (tech stack, DB tables,
+  relationships, business rules, interface, New Entries tab, History tab, REST
+  conventions, UX/keyboard, performance, submission requirements).
+  - New "Bonuses" section — all five bonuses marked implemented with where to
+  find them; Super Bonus marked as not implemented (the only one).
+  - API surface table — added the missing endpoints (PUT, DELETE, /summary,
+  /companies/{id}/employees/{id}/projects) and the new query params for the list
+   endpoint (from, to, search, page, per_page).
+  - Test count corrected (23 → 30) and broadened to mention edit/delete/filter
+  coverage.
+  - "What's intentionally not implemented" trimmed to just AI super-bonus and
+  auth — removed the stale "Edit / delete from history" and "Summary totals
+  beyond row count + sum" entries that contradicted the actual code.
+  - Project layout updated to include EditEntryModal, SummaryCard, useSummary,
+  SummaryController, the new tests, and the ai-sessions/ directory.
+
+✻ Cooked for 1m 16s
+❯ the database rules and relantionships are built perfectly too, right?         
+  anything missing? this must be perfect -- and in frontend, everything perfect 
+   too?                                                                         
+
+⏺ Let me check a few things I'm uncertain about before answering — CSS class
+  definitions, factories, and a couple of edge cases.
+
+  Searched for 1 pattern, listed 1 directory (ctrl+o to expand)
+
+⏺ Honest review — split into "spec-perfect" and "things that work but aren't
+  ideal."
+
+  Database — spec-perfect, but two design notes
+
+  All required structure and relationships are correct. Migrations, FKs, pivots,
+   model relationships all match the spec exactly:
+  - Company hasMany Project/Task ✓
+  - Company belongsToMany Employee (via company_employee) ✓
+  - Employee belongsToMany Project (via employee_project) ✓
+  - tasks has only company_id (company-specific, not project-specific) ✓
+  - TimeEntry belongs to all four + date ✓
+  - Indexes on (employee_id, date) and (company_id, date) ✓
+  - cascadeOnDelete on every FK ✓
+
+  Things that are not bugs but I'd flag for full-prod-grade:
+
+  1. No DB-level uniqueness backing the "one project per (employee, date)" rule.
+   It's enforced in StoreTimeEntriesRequest/UpdateTimeEntryRequest only. Two
+  concurrent POSTs racing for the same (employee, date) could both pass
+  validation and both insert with different project_ids. For a take-home this is
+   fine (and the spec only asks for validation, not DB constraints). A hardened
+  version would either:
+    - lock the (employee_id, date) rows in a transaction before insert, or
+    - add a partial/conditional unique index — non-trivial in SQLite.
+  2. hours is unsignedTinyInteger (0–255). Works because validation caps at 24.
+  Locks you out of fractional hours (0.5h, 1.25h) if that ever becomes a
+  requirement. Not wrong — just a one-way door.
+
+  Neither is a spec violation. Both pass all 30 tests.
+
+  Frontend — spec-perfect, but a handful of small issues
+
+  All requirements met. Two tabs, top-level company selector defaulting to
+  "All", row order Company→Date→Employee→Project→Task→Hours, cascading
+  per-company lookups, server-validated submit, Tab-key field flow, paginated
+  history, edit modal, summary card, keyboard shortcuts. Composition API
+  throughout.
+
+  What I'd actually fix if you want this tight:
+
+  1. resources/js/components/CompanyFilter.vue is dead code. Unused — the
+  selector lives inside SummaryCard.vue now. Remove it.
+  2. NewEntriesTab.vue:12 uses new Date().toISOString().slice(0, 10) for today's
+   date. That's UTC, not local. Around midnight in non-UTC timezones the default
+   date will be off by one day. Use a local-date formatter (e.g. new 
+  Date().toLocaleDateString('en-CA') returns YYYY-MM-DD in local time).
+  3. ⌘D always duplicates the last row, regardless of focus
+  (NewEntriesTab.vue:67). If a user is mid-table editing row 3 and hits ⌘D, they
+   get a copy of row N appended. Better: duplicate the row containing the
+  focused element. Minor UX nit.
+  4. No focus trap or document-level Esc handler in EditEntryModal.vue. Tab can
+  escape the modal; Esc only fires when the overlay element itself has focus.
+  Accessibility nit.
+  5. window.confirm() for delete in the edit modal. Functional, but not in
+  keeping with the rest of the polish.
+  6. Race conditions on rapid select changes in EntryRow.vue / 
+  EditEntryModal.vue. If a user changes company → employee → project very fast,
+  async narrow-list responses can resolve out of order. The promise cache hides
+  most of it, but it's not bulletproof. A small request-id/AbortController guard
+   would close it.
+  7. No labels/aria-label on the cell selects in EntryRow.vue. The <thead>
+  provides visual labels but screen readers won't tie them to each cell. Add
+  aria-label per field.
+  8. Mild duplication: useCompanies is called from both SummaryCard and
+  NewEntriesTab/EditEntryModal — the network is deduped (cache), but each call
+  site keeps its own companies ref. A module-level singleton ref would be
+  cleaner.
+
+  None of these are spec violations. #1 (dead file) and #2 (UTC vs local date) 
+  are the only ones I'd actually fix before shipping — the first is a dead-code
+  smell a reviewer will notice immediately, the second is a real bug at a
+  timezone boundary.
+
+  Want me to apply those two fixes?
+
+✻ Churned for 1m 43s
+
+❯ 1. lets move the dropdown to the top, this impacts everything and not only    
+  the summary card, so lets remove from the summary and put that on top right   
+  again                                                                         
+  2. ok lets use that                                                           
+  3. ok make sense, but when are not focusing an anything lets duplicate the    
+  last one, right?                                                              
+  4. yes, the accessibility for the modal is horrible, hitting tab move on the  
+  page above the modal, focus on that, and esc must close that too              
+  5. ok fix that                                                                
+  6. lets fix that too                                                          
+  7. add the aria-label for each field                                          
+  8. perfect lets fix that too                                                  
+                                                                                
+  also, make the edit button a little more visible on the history table too -   
+  just invert the colors of it, with the background black will be more visible  
+
+⏺ Plan: 8 changes across 7 files + delete dead CompanyFilter revival. Let me
+  apply them.
+
+⏺ Write(resources/js/components/CompanyFilter.vue)
+  ⎿  Added 25 lines, removed 12 lines
+      23  </script>
+      24  
+      25  <template>
+      26 -  <label class="flex items-center gap-2 text-sm text-slate-600"
+         ->                                                              
+      27 -    <span>Company</span>                                       
+      28 -    <select                                                    
+      29 -      class="rounded border border-slate-300 bg-white px-3 py-1
+         -.5 text-sm text-slate-900 shadow-sm focus:border-slate-500 focu
+         -s:outline-none focus:ring-1 focus:ring-slate-500"              
+      30 -      :value="selectValue"                                     
+      31 -      @change="onChange"                                       
+      32 -    >                                                          
+      33 -      <option value="">All</option>                            
+      34 -      <option v-for="company in companies" :key="company.id" :v
+         -alue="company.id">                                             
+      35 -        {{ company.name }}                                     
+      36 -      </option>                                                
+      37 -    </select>                                                  
+      26 +  <label class="flex items-center gap-2">                      
+      27 +    <span class="text-xs uppercase tracking-wider text-ink-mute
+         +">Showing</span>                                               
+      28 +    <div class="relative">                                     
+      29 +      <select                                                  
+      30 +        :value="selectValue"                                   
+      31 +        aria-label="Filter by company"                         
+      32 +        class="cursor-pointer appearance-none rounded-md border
+         + border-paper-line bg-paper py-1.5 pl-3 pr-8 text-sm font-mediu
+         +m text-ink transition-colors hover:bg-paper-tint focus:border-a
+         +ccent focus:outline-none"                                      
+      33 +        @change="onChange"                                     
+      34 +      >                                                        
+      35 +        <option value="">All companies</option>                
+      36 +        <option v-for="company in companies" :key="company.id" 
+         +:value="company.id">                                           
+      37 +          {{ company.name }}                                   
+      38 +        </option>                                              
+      39 +      </select>                                                
+      40 +      <svg                                                     
+      41 +        aria-hidden="true"                                     
+      42 +        class="pointer-events-none absolute right-2.5 top-1/2 -
+         +translate-y-1/2 text-ink-mute"                                 
+      43 +        width="10"                                             
+      44 +        height="10"                                            
+      45 +        viewBox="0 0 12 12"                                    
+      46 +        fill="none"                                            
+      47 +      >                                                        
+      48 +        <path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColor" st
+         +roke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+         + />                                                            
+      49 +      </svg>                                                   
+      50 +    </div>                                                     
+      51    </label>
+      52  </template>
+
+⏺ Write(resources/js/App.vue)
+  ⎿  Added 8 lines, removed 4 lines
+       4  import Tabs from "./components/Tabs.vue";
+       5  import NewEntriesTab from "./components/NewEntriesTab.vue";
+       6  import HistoryTab from "./components/HistoryTab.vue";
+       7 +import CompanyFilter from "./components/CompanyFilter.vue";    
+       8  
+       9  // `null` => All companies; otherwise a specific company id.
+      10  const selectedCompanyId = ref(null);
+     ...
+      43                          Hours worked, by company, employee, pro
+          ject, and task.
+      44                      </p>
+      45                  </div>
+      45 -                <p class="hidden text-sm text-ink-mute tabular-
+         -mono sm:block">                                                
+      46 -                    {{ today }}                                
+      47 -                </p>                                           
+      46 +                <div class="flex flex-col items-end gap-2">    
+      47 +                    <CompanyFilter v-model="selectedCompanyId" 
+         +/>                                                             
+      48 +                    <p class="hidden text-xs text-ink-mute tabu
+         +lar-mono sm:block">                                            
+      49 +                        {{ today }}                            
+      50 +                    </p>                                       
+      51 +                </div>                                         
+      52              </header>
+      53  
+      50 -            <SummaryCard ref="summaryRef" v-model="selectedComp
+         -anyId" />                                                      
+      54 +            <SummaryCard ref="summaryRef" />                   
+      55  
+      56              <Tabs v-model="activeTab" :tabs="tabs" />
+      57  
+
+⏺ Write(resources/js/components/SummaryCard.vue)
+  ⎿  Added 10 lines, removed 67 lines
+       1  <script setup>
+       2 -import { onMounted, watch, computed } from "vue";              
+       3 -import { useCompanies } from "../composables/useCompanyData";  
+       2 +import { onMounted, watch, computed, inject } from "vue";      
+       3  import { useSummary } from "../composables/useSummary";
+       4  
+       6 -const props = defineProps({                                    
+       7 -    modelValue: {                                              
+       8 -        type: [Number, null],                                  
+       9 -        default: null,                                         
+      10 -    },                                                         
+      11 -});                                                            
+      12 -                                                               
+      13 -const emit = defineEmits(["update:modelValue"]);               
+      14 -                                                               
+      15 -const { companies, load: loadCompanies } = useCompanies();     
+       5 +const selectedCompanyId = inject("selectedCompanyId");         
+       6  const { summary, load: loadSummary, loading } = useSummary();
+       7  
+      18 -onMounted(async () => {                                        
+      19 -    await Promise.all([loadCompanies(), loadSummary(props.model
+         -Value)]);                                                      
+      20 -});                                                            
+       8 +onMounted(() => loadSummary(selectedCompanyId.value));         
+       9  
+      22 -watch(                                                         
+      23 -    () => props.modelValue,                                    
+      24 -    (id) => loadSummary(id),                                   
+      25 -);                                                             
+      10 +watch(selectedCompanyId, (id) => loadSummary(id));             
+      11  
+      27 -defineExpose({ refresh: () => loadSummary(props.modelValue) });
+      12 +defineExpose({ refresh: () => loadSummary(selectedCompanyId.val
+         +ue) });                                                        
+      13  
+      29 -const selectValue = computed(() =>                             
+      30 -    props.modelValue === null ? "" : String(props.modelValue), 
+      31 -);                                                             
+      32 -                                                               
+      33 -function onSelect(event) {                                     
+      34 -    const raw = event.target.value;                            
+      35 -    emit("update:modelValue", raw === "" ? null : Number(raw));
+      36 -}                                                              
+      37 -                                                               
+      14  const scopeLabel = computed(
+      15      () => summary.value?.company_name ?? "all companies",
+      16  );
+     ...
+       66          class="rounded-lg border border-paper-line bg-paper px
+           -5 py-5 sm:px-6 sm:py-6"
+       67      >
+       68          <div
+       93 -            class="flex flex-wrap items-center justify-between
+          - gap-3 border-b border-paper-line pb-4"                       
+       69 +            class="flex items-center justify-between border-b 
+          +border-paper-line pb-4"                                       
+       70          >
+       95 -            <div class="flex items-center gap-2">             
+       96 -                <span class="text-xs text-ink-mute">Showing</s
+          -pan>                                                          
+       97 -                <div class="relative">                        
+       98 -                    <select                                   
+       99 -                        :value="selectValue"                  
+      100 -                        class="cursor-pointer appearance-none 
+          -rounded-md border border-paper-line bg-paper py-1 pl-2.5 pr-7 
+          -text-sm font-medium text-ink transition-colors hover:bg-paper-
+          -tint focus:border-accent focus:outline-none"                  
+      101 -                        @change="onSelect"                    
+      102 -                    >                                         
+      103 -                        <option value="">All companies</option
+          ->                                                             
+      104 -                        <option                               
+      105 -                            v-for="c in companies"            
+      106 -                            :key="c.id"                       
+      107 -                            :value="c.id"                     
+      108 -                        >                                     
+      109 -                            {{ c.name }}                      
+      110 -                        </option>                             
+      111 -                    </select>                                 
+      112 -                    <svg                                      
+      113 -                        aria-hidden="true"                    
+      114 -                        class="pointer-events-none absolute ri
+          -ght-2 top-1/2 -translate-y-1/2 text-ink-mute"                 
+      115 -                        width="10"                            
+      116 -                        height="10"                           
+      117 -                        viewBox="0 0 12 12"                   
+      118 -                        fill="none"                           
+      119 -                    >                                         
+      120 -                        <path                                 
+      121 -                            d="M2.5 4.5L6 8l3.5-3.5"          
+      122 -                            stroke="currentColor"             
+      123 -                            stroke-width="1.5"                
+      124 -                            stroke-linecap="round"            
+      125 -                            stroke-linejoin="round"           
+      126 -                        />                                    
+      127 -                    </svg>                                    
+      128 -                </div>                                        
+      129 -            </div>                                            
+      130 -                                                              
+      131 -            <div v-if="loading" class="text-xs text-ink-mute">
+          -Loading…</div>                                                
+       71 +            <p class="text-xs uppercase tracking-wider text-in
+          +k-mute">                                                      
+       72 +                Showing {{ scopeLabel }}                      
+       73 +            </p>                                              
+       74 +            <p v-if="loading" class="text-xs text-ink-mute">Lo
+          +ading…</p>                                                    
+       75          </div>
+       76  
+       77          <div class="mt-5 grid grid-cols-2 gap-x-6 gap-y-5 sm:g
+           rid-cols-4">
+
+⏺ Now NewEntriesTab — local-date helper + focused-row duplicate.
+
+⏺ Update(resources/js/components/NewEntriesTab.vue)
+  ⎿  Added 17 lines, removed 1 line
+       9  const { companies, load: loadCompanies } = useCompanies();
+      10  onMounted(loadCompanies);
+      11  
+      12 -const today = () => new Date().toISOString().slice(0, 10);     
+      12 +// Local-date YYYY-MM-DD. `toISOString()` would emit UTC, so ar
+         +ound midnight in                                               
+      13 +// non-UTC timezones the default would be off by one day.      
+      14 +const today = () => {                                          
+      15 +    const d = new Date();                                      
+      16 +    const y = d.getFullYear();                                 
+      17 +    const m = String(d.getMonth() + 1).padStart(2, "0");       
+      18 +    const day = String(d.getDate()).padStart(2, "0");          
+      19 +    return `${y}-${m}-${day}`;                                 
+      20 +};                                                             
+      21  
+      22 +function focusedRowIndex() {                                   
+      23 +    const el = document.activeElement;                         
+      24 +    const rowEl = el?.closest?.("[data-row]");                 
+      25 +    if (!rowEl) return null;                                   
+      26 +    const idx = Number(rowEl.dataset.row);                     
+      27 +    return Number.isFinite(idx) ? idx : null;                  
+      28 +}                                                              
+      29 +                                                               
+      30  const blankRow = () => ({
+      31      company_id: selectedCompanyId.value ?? null,
+      32      date: today(),
+
+⏺ Update(resources/js/components/NewEntriesTab.vue)
+  ⎿  Added 2 lines, removed 1 line
+      80          submit();
+      81      } else if (event.key.toLowerCase() === "d") {
+      82          event.preventDefault();
+      83 -        duplicateRow(rows.value.length - 1);                   
+      83 +        const idx = focusedRowIndex();                         
+      84 +        duplicateRow(idx ?? rows.value.length - 1);            
+      85      } else if (event.key.toLowerCase() === "b") {
+      86          event.preventDefault();
+      87          addRow();
+
+⏺ Now EntryRow — request-id guards + aria-labels.
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 22 lines, removed 14 lines
+      42  const tasks = ref([]);
+      43  const employees = ref([]);
+      44  
+      45 +// Request-id guards. If the user changes selectors faster than
+         + the network                                                   
+      46 +// resolves, only the most recent fetch is allowed to mutate th
+         +e list refs —                                                  
+      47 +// stale responses are dropped. Without these, a slow earlier r
+         +esponse can                                                    
+      48 +// overwrite a fresher narrower one.                           
+      49 +let companyListsReqId = 0;                                     
+      50 +let projectsReqId = 0;                                         
+      51 +let employeesReqId = 0;                                        
+      52 +                                                               
+      53  async function refreshCompanyLists(companyId) {
+      54      if (!companyId) {
+      55          projects.value = [];
+     ...
+      57          employees.value = [];
+      58          return;
+      59      }
+      52 -    // Loading employees + tasks always; projects load from the
+         - wider company                                                 
+      53 -    // list initially, then narrow once an employee is picked. 
+      60 +    const id = ++companyListsReqId;                            
+      61      const [t, e, p] = await Promise.all([
+      62          fetchTasksForCompany(companyId),
+      63          fetchEmployeesForCompany(companyId),
+      64          fetchProjectsForCompany(companyId),
+      65      ]);
+      66 +    if (id !== companyListsReqId) return;                      
+      67      tasks.value = t;
+      68      employees.value = e;
+      69      projects.value = p;
+     ...
+      71  
+      72  async function narrowProjectsToEmployee(companyId, employeeId) 
+          {
+      73      if (!companyId) return;
+      66 -    if (!employeeId) {                                         
+      67 -        // No employee selected: show every project on the comp
+         -any.                                                           
+      68 -        projects.value = await fetchProjectsForCompany(companyI
+         -d);                                                            
+      69 -        return;                                                
+      70 -    }                                                          
+      71 -    projects.value = await fetchProjectsForEmployee(companyId, 
+         -employeeId);                                                   
+      74 +    const id = ++projectsReqId;                                
+      75 +    const result = !employeeId                                 
+      76 +        ? await fetchProjectsForCompany(companyId)             
+      77 +        : await fetchProjectsForEmployee(companyId, employeeId)
+         +;                                                              
+      78 +    if (id !== projectsReqId) return;                          
+      79 +    projects.value = result;                                   
+      80  }
+      81  
+      82  async function narrowEmployeesToProject(companyId, projectId) {
+      83      if (!companyId) return;
+      76 -    if (!projectId) {                                          
+      77 -        // No project selected: show every employee on the comp
+         -any.                                                           
+      78 -        employees.value = await fetchEmployeesForCompany(compan
+         -yId);                                                          
+      79 -        return;                                                
+      80 -    }                                                          
+      81 -    employees.value = await fetchEmployeesForProject(companyId,
+         - projectId);                                                   
+      84 +    const id = ++employeesReqId;                               
+      85 +    const result = !projectId                                  
+      86 +        ? await fetchEmployeesForCompany(companyId)            
+      87 +        : await fetchEmployeesForProject(companyId, projectId);
+      88 +    if (id !== employeesReqId) return;                         
+      89 +    employees.value = result;                                  
+      90  }
+      91  
+      92  watch(
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 10 lines
+      135  ];
+      136  
+      137  const fieldError = (field) => props.errors[field]?.[0] ?? null
+           ;
+      138 +                                                              
+      139 +const fieldLabels = {                                         
+      140 +    company_id: "Company",                                    
+      141 +    date: "Date",                                             
+      142 +    employee_id: "Employee",                                  
+      143 +    project_id: "Project",                                    
+      144 +    task_id: "Task",                                          
+      145 +    hours: "Hours",                                           
+      146 +};                                                            
+      147 +const ariaLabel = (field) => `${fieldLabels[field]}, row ${pro
+          +ps.index + 1}`;                                               
+      148  </script>
+      149  
+      150  <template>
+
+⏺ Now add :aria-label to each select/input in the EntryRow template.
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 1 line
+      156                  :class="fieldClass('company_id')"
+      157                  :value="row.company_id ?? ''"
+      158                  :data-row="index"
+      159 +                :aria-label="ariaLabel('company_id')"         
+      160                  data-field="company_id"
+      161                  @change="
+      162                      (e) =>
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 1 line
+      186                  :class="fieldClass('date')"
+      187                  :value="row.date"
+      188                  :data-row="index"
+      189 +                :aria-label="ariaLabel('date')"               
+      190                  data-field="date"
+      191                  @input="(e) => patch({ date: e.target.value })
+           "
+      192              />
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 1 line
+      203                  :value="row.employee_id ?? ''"
+      204                  :disabled="!row.company_id"
+      205                  :data-row="index"
+      206 +                :aria-label="ariaLabel('employee_id')"        
+      207                  data-field="employee_id"
+      208                  @change="
+      209                      (e) =>
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 1 line
+      235                  :value="row.project_id ?? ''"
+      236                  :disabled="!row.company_id"
+      237                  :data-row="index"
+      238 +                :aria-label="ariaLabel('project_id')"         
+      239                  data-field="project_id"
+      240                  @change="
+      241                      (e) =>
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 1 line
+      267                  :value="row.task_id ?? ''"
+      268                  :disabled="!row.company_id"
+      269                  :data-row="index"
+      270 +                :aria-label="ariaLabel('task_id')"            
+      271                  data-field="task_id"
+      272                  @change="
+      273                      (e) =>
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 1 line
+      303                  :class="[fieldClass('hours'), 'pr-2']"
+      304                  :value="row.hours ?? ''"
+      305                  :data-row="index"
+      306 +                :aria-label="ariaLabel('hours')"              
+      307                  data-field="hours"
+      308                  @input="
+      309                      (e) =>
+
+⏺ Now useCompanyData.js — make useCompanies a singleton.
+⏺ Update(resources/js/composables/useCompanyData.js)
+  ⎿  Added 13 lines, removed 9 lines
+       1  import { ref } from 'vue';
+       2  import { cachedGet } from './useApi';
+       3  
+       4 +// Module-level singleton: every caller of `useCompanies()` sha
+         +res the same                                                   
+       5 +// reactive ref. The previous version created per-component ref
+         +s and relied on                                                
+       6 +// the network cache to dedupe — this avoids that duplication e
+         +ntirely.                                                       
+       7 +const companiesRef = ref([]);                                  
+       8 +const loadedRef = ref(false);                                  
+       9 +let loadPromise = null;                                        
+      10 +                                                               
+      11  /**
+      12   * Loads (and caches) the full company list once for the page l
+          ifetime.
+       6 - * Multiple components calling `load()` share a single request.
+      13 + * Multiple components calling `load()` share a single request 
+         +and a single                                                   
+      14 + * reactive list.                                              
+      15   */
+      16  export function useCompanies() {
+       9 -  const companies = ref([]);                                   
+      10 -  const loaded = ref(false);                                   
+      11 -  let loadPromise = null;                                      
+      12 -                                                               
+      17    async function load() {
+      14 -    if (loaded.value) return;                                  
+      18 +    if (loadedRef.value) return;                               
+      19      if (!loadPromise) {
+      20        loadPromise = cachedGet('/companies').then((data) => {
+      17 -        companies.value = data;                                
+      18 -        loaded.value = true;                                   
+      21 +        companiesRef.value = data;                             
+      22 +        loadedRef.value = true;                                
+      23        });
+      24      }
+      25      await loadPromise;
+      26    }
+      27  
+      24 -  return { companies, load, loaded };                          
+      28 +  return { companies: companiesRef, load, loaded: loadedRef }; 
+      29  }
+      30  
+      31  export const fetchEmployeesForCompany = (companyId) =>
+
+⏺ Now HistoryTab — Edit button inverted/always visible.
+
+⏺ Update(resources/js/components/HistoryTab.vue)
+  ⎿  Added 1 line, removed 1 line
+      183              <td class="px-3 py-2.5 text-right">
+      184                <button
+      185                  type="button"
+      186 -                class="inline-flex items-center gap-1 rounded-
+          -md px-2 py-1 text-xs text-ink-soft opacity-0 transition hover:
+          -bg-paper hover:text-ink group-hover:opacity-100 focus:opacity-
+          -100"                                                          
+      186 +                class="inline-flex items-center gap-1 rounded-
+          +md bg-ink px-2.5 py-1 text-xs font-medium text-paper transitio
+          +n-colors hover:bg-ink-soft focus:outline-none focus:ring-2 foc
+          +us:ring-ink focus:ring-offset-1"                              
+      187                  @click="editing = entry"
+      188                >
+      189                  <svg width="12" height="12" viewBox="0 0 16 16
+           " fill="none" aria-hidden="true">
+
+⏺ Now the big one — EditEntryModal: focus trap, Esc, inline delete confirmation,
+   request-id guards, aria-labels.
+
+⏺ Write(resources/js/components/EditEntryModal.vue)
+  ⎿  Added 137 lines, removed 32 lines
+      1  <script setup>
+      2 -import { ref, watch, onMounted, computed, inject } from 'vue';  
+      2 +import { ref, watch, onMounted, onBeforeUnmount, nextTick, injec
+        +t } from 'vue';                                                 
+      3  import {
+      4    useCompanies,
+      5    fetchEmployeesForCompany,
+     ...
+      38  const errors = ref({});
+      39  const saving = ref(false);
+      40  const flash = ref(null);
+      41 +const confirmingDelete = ref(false);                           
+      42 +const modalPanelRef = ref(null);                               
+      43 +let previousActiveElement = null;                              
+      44  
+      45 +let companyListsReqId = 0;                                     
+      46 +let projectsReqId = 0;                                         
+      47 +                                                               
+      48  const fieldClass = (field) => [
+      49    'field tabular-mono',
+      50    errors.value[field] ? 'field-error' : '',
+     ...
+      54  
+      55  async function loadCompanyLists(companyId) {
+      56    if (!companyId) return;
+      57 +  const id = ++companyListsReqId;                              
+      58    const [t, e] = await Promise.all([
+      59      fetchTasksForCompany(companyId),
+      60      fetchEmployeesForCompany(companyId),
+      61    ]);
+      62 +  if (id !== companyListsReqId) return;                        
+      63    tasks.value = t;
+      64    employees.value = e;
+      65  }
+     ...
+      69      projects.value = [];
+      70      return;
+      71    }
+      64 -  if (!employeeId) {                                           
+      65 -    projects.value = await fetchProjectsForCompany(companyId); 
+      66 -    return;                                                    
+      67 -  }                                                            
+      68 -  projects.value = await fetchProjectsForEmployee(companyId, em
+         -ployeeId);                                                     
+      72 +  const id = ++projectsReqId;                                  
+      73 +  const result = !employeeId                                   
+      74 +    ? await fetchProjectsForCompany(companyId)                 
+      75 +    : await fetchProjectsForEmployee(companyId, employeeId);   
+      76 +  if (id !== projectsReqId) return;                            
+      77 +  projects.value = result;                                     
+      78  }
+      79  
+      80  watch(
+     ...
+      86        form.value.employee_id = null;
+      87        form.value.project_id = null;
+      88        form.value.task_id = null;
+      80 -      projects.value = await fetchProjectsForCompany(id);      
+      89 +      const reqId = ++projectsReqId;                           
+      90 +      const result = await fetchProjectsForCompany(id);        
+      91 +      if (reqId === projectsReqId) projects.value = result;    
+      92      } else {
+      93        // Initial load: narrow to the employee already on the en
+          try.
+      94        await narrowProjectsToEmployee(id, form.value.employee_id
+          );
+     ...
+      128  }
+      129  
+      130  async function destroy() {
+      120 -  if (!window.confirm('Delete this entry? This cannot be undon
+          -e.')) return;                                                 
+      131    saving.value = true;
+      132    try {
+      133      await deleteTimeEntry(props.entry.id);
+     ...
+      135      emit('deleted', props.entry.id);
+      136    } catch {
+      137      flash.value = { type: 'error', message: "Couldn't delete t
+           he entry." };
+      138 +    confirmingDelete.value = false;                           
+      139    } finally {
+      140      saving.value = false;
+      141    }
+      142  }
+      143  
+      144 +function getFocusable() {                                     
+      145 +  if (!modalPanelRef.value) return [];                        
+      146 +  return [...modalPanelRef.value.querySelectorAll(            
+      147 +    'button:not([disabled]), [href], input:not([disabled]), se
+          +lect:not([disabled]), textarea:not([disabled]), [tabindex]:not
+          +([tabindex="-1"])',                                           
+      148 +  )];                                                         
+      149 +}                                                             
+      150 +                                                              
+      151 +// Trap Tab/Shift-Tab inside the modal and close on Esc. Liste
+          +ning on                                                       
+      152 +// `document` (not the overlay) so it works regardless of wher
+          +e focus is —                                                  
+      153 +// otherwise focus could escape behind the modal and the keys 
+          +wouldn't fire.                                                
+      154 +function onKeydown(e) {                                       
+      155 +  if (e.key === 'Escape') {                                   
+      156 +    e.preventDefault();                                       
+      157 +    emit('close');                                            
+      158 +    return;                                                   
+      159 +  }                                                           
+      160 +  if (e.key !== 'Tab') return;                                
+      161 +  const focusable = getFocusable();                           
+      162 +  if (focusable.length === 0) return;                         
+      163 +  const first = focusable[0];                                 
+      164 +  const last = focusable[focusable.length - 1];               
+      165 +  const active = document.activeElement;                      
+      166 +  const insideModal = modalPanelRef.value?.contains(active);  
+      167 +                                                              
+      168 +  if (e.shiftKey) {                                           
+      169 +    if (!insideModal || active === first) {                   
+      170 +      e.preventDefault();                                     
+      171 +      last.focus();                                           
+      172 +    }                                                         
+      173 +  } else if (!insideModal || active === last) {               
+      174 +    e.preventDefault();                                       
+      175 +    first.focus();                                            
+      176 +  }                                                           
+      177 +}                                                             
+      178 +                                                              
+      179 +onMounted(async () => {                                       
+      180 +  previousActiveElement = document.activeElement;             
+      181 +  document.addEventListener('keydown', onKeydown);            
+      182 +  await nextTick();                                           
+      183 +  // Place focus on the first form field rather than the close
+          + button so the                                                
+      184 +  // user can start editing immediately.                      
+      185 +  const firstField = modalPanelRef.value?.querySelector('selec
+          +t, input');                                                   
+      186 +  if (firstField) firstField.focus();                         
+      187 +  else getFocusable()[0]?.focus();                            
+      188 +});                                                           
+      189 +                                                              
+      190 +onBeforeUnmount(() => {                                       
+      191 +  document.removeEventListener('keydown', onKeydown);         
+      192 +  // Restore focus to whatever launched the modal so keyboard 
+          +navigation feels                                              
+      193 +  // continuous for screen-reader and keyboard users.         
+      194 +  if (previousActiveElement && typeof previousActiveElement.fo
+          +cus === 'function') {                                         
+      195 +    previousActiveElement.focus();                            
+      196 +  }                                                           
+      197 +});                                                           
+      198 +                                                              
+      199  function onBackdropClick(event) {
+      200    if (event.target === event.currentTarget) emit('close');
+      201  }
+     ...
+      205    <div
+      206      class="modal-overlay fixed inset-0 z-40 flex items-start j
+           ustify-center overflow-y-auto px-4 py-12"
+      207      style="background-color: rgba(15, 15, 15, 0.45);"
+      208 +    role="dialog"                                             
+      209 +    aria-modal="true"                                         
+      210 +    aria-labelledby="edit-entry-title"                        
+      211      @click="onBackdropClick"
+      143 -    @keydown.esc="$emit('close')"                             
+      212    >
+      145 -    <div class="modal-panel w-full max-w-xl rounded-lg border 
+          -border-paper-line bg-paper p-6 shadow-xl">                    
+      213 +    <div                                                      
+      214 +      ref="modalPanelRef"                                     
+      215 +      class="modal-panel w-full max-w-xl rounded-lg border bor
+          +der-paper-line bg-paper p-6 shadow-xl"                        
+      216 +    >                                                         
+      217        <div class="mb-5 flex items-start justify-between">
+      218          <div>
+      219            <p class="text-xs text-ink-mute">Entry #{{ entry.id 
+           }}</p>
+      149 -          <h2 class="mt-0.5 text-xl font-semibold leading-tigh
+          -t tracking-[var(--tracking-tight)] text-ink">                 
+      220 +          <h2                                                 
+      221 +            id="edit-entry-title"                             
+      222 +            class="mt-0.5 text-xl font-semibold leading-tight 
+          +tracking-[var(--tracking-tight)] text-ink"                    
+      223 +          >                                                   
+      224              Edit entry
+      225            </h2>
+      226          </div>
+     ...
+      254            <select
+      255              :class="fieldClass('company_id')"
+      256              :value="form.company_id ?? ''"
+      257 +            aria-label="Company"                              
+      258              @change="(e) => (form.company_id = e.target.value 
+           ? Number(e.target.value) : null)"
+      259            >
+      260              <option value="">—</option>
+     ...
+      271              type="date"
+      272              :class="fieldClass('date')"
+      273              :value="form.date"
+      274 +            aria-label="Date"                                 
+      275              @input="(e) => (form.date = e.target.value)"
+      276            />
+      277            <p v-if="fieldError('date')" class="mt-1 text-[11px]
+            text-danger">{{ fieldError('date') }}</p>
+     ...
+      285              :class="fieldClass('employee_id')"
+      286              :value="form.employee_id ?? ''"
+      287              :disabled="!form.company_id"
+      288 +            aria-label="Employee"                             
+      289              @change="(e) => (form.employee_id = e.target.value
+            ? Number(e.target.value) : null)"
+      290            >
+      291              <option value="">—</option>
+     ...
+      302              :class="fieldClass('project_id')"
+      303              :value="form.project_id ?? ''"
+      304              :disabled="!form.company_id"
+      305 +            aria-label="Project"                              
+      306              @change="(e) => (form.project_id = e.target.value 
+           ? Number(e.target.value) : null)"
+      307            >
+      308              <option value="">—</option>
+     ...
+      319              :class="fieldClass('task_id')"
+      320              :value="form.task_id ?? ''"
+      321              :disabled="!form.company_id"
+      322 +            aria-label="Task"                                 
+      323              @change="(e) => (form.task_id = e.target.value ? N
+           umber(e.target.value) : null)"
+      324            >
+      325              <option value="">—</option>
+     ...
+      340              inputmode="numeric"
+      341              :class="[fieldClass('hours'), 'text-right']"
+      342              :value="form.hours ?? ''"
+      343 +            aria-label="Hours"                                
+      344              @input="(e) => (form.hours = e.target.value === ''
+            ? null : Math.trunc(Number(e.target.value)))"
+      345            />
+      346            <p v-if="fieldError('hours')" class="mt-1 text-[11px
+           ] text-danger">{{ fieldError('hours') }}</p>
+     ...
+      348        </div>
+      349  
+      350        <div class="mt-6 flex items-center justify-between borde
+           r-t border-paper-line pt-4">
+      271 -        <button                                               
+      272 -          type="button"                                       
+      273 -          class="btn btn-danger"                              
+      274 -          :disabled="saving"                                  
+      275 -          @click="destroy"                                    
+      276 -        >                                                     
+      277 -          Delete entry                                        
+      278 -        </button>                                             
+      279 -        <div class="flex items-center gap-3">                 
+      351 +        <template v-if="!confirmingDelete">                   
+      352            <button
+      353              type="button"
+      282 -            class="btn btn-secondary"                         
+      354 +            class="btn btn-danger"                            
+      355              :disabled="saving"
+      284 -            @click="$emit('close')"                           
+      356 +            @click="confirmingDelete = true"                  
+      357            >
+      286 -            Cancel                                            
+      358 +            Delete entry                                      
+      359            </button>
+      288 -          <button                                             
+      289 -            type="button"                                     
+      290 -            class="btn btn-primary"                           
+      291 -            :disabled="saving"                                
+      292 -            @click="save"                                     
+      293 -          >                                                   
+      294 -            {{ saving ? 'Saving…' : 'Save changes' }}         
+      295 -          </button>                                           
+      296 -        </div>                                                
+      360 +          <div class="flex items-center gap-3">               
+      361 +            <button                                           
+      362 +              type="button"                                   
+      363 +              class="btn btn-secondary"                       
+      364 +              :disabled="saving"                              
+      365 +              @click="$emit('close')"                         
+      366 +            >                                                 
+      367 +              Cancel                                          
+      368 +            </button>                                         
+      369 +            <button                                           
+      370 +              type="button"                                   
+      371 +              class="btn btn-primary"                         
+      372 +              :disabled="saving"                              
+      373 +              @click="save"                                   
+      374 +            >                                                 
+      375 +              {{ saving ? 'Saving…' : 'Save changes' }}       
+      376 +            </button>                                         
+      377 +          </div>                                              
+      378 +        </template>                                           
+      379 +        <template v-else>                                     
+      380 +          <span class="text-sm font-medium text-danger">      
+      381 +            Delete this entry? This cannot be undone.         
+      382 +          </span>                                             
+      383 +          <div class="flex items-center gap-3">               
+      384 +            <button                                           
+      385 +              type="button"                                   
+      386 +              class="btn btn-secondary"                       
+      387 +              :disabled="saving"                              
+      388 +              @click="confirmingDelete = false"               
+      389 +            >                                                 
+      390 +              Cancel                                          
+      391 +            </button>                                         
+      392 +            <button                                           
+      393 +              type="button"                                   
+      394 +              class="btn btn-danger"                          
+      395 +              :disabled="saving"                              
+      396 +              @click="destroy"                                
+      397 +            >                                                 
+      398 +              {{ saving ? 'Deleting…' : 'Confirm delete' }}   
+      399 +            </button>                                         
+      400 +          </div>                                              
+      401 +        </template>                                           
+      402        </div>
+      403      </div>
+      404    </div>
+
+⏺ Now let me build and verify nothing broke.
+
+⏺ Bash(npm run build 2>&1 | tail -30)
+  ⎿  > build
+     > vite build
+     … +9 lines (ctrl+o to expand)
+
+⏺ Bash(php artisan test 2>&1 | tail -10)
+  ⎿  {
+       "tool": "phpunit",
+       "result": "passed",
+     … +5 lines (ctrl+o to expand)
+
+⏺ Build passes, all 30 tests still green.
+
+  Summary of changes:
+
+  1. App.vue + CompanyFilter.vue — moved company dropdown to the top right of
+  the header (with date underneath); rebuilt CompanyFilter with the polished
+  styling that previously lived in SummaryCard.
+  2. SummaryCard.vue — dropped its own selector and modelValue prop; reads
+  selectedCompanyId via inject and shows "Showing {scope}" instead.
+  3. NewEntriesTab.vue — today() now returns local YYYY-MM-DD (no UTC midnight
+  bug); ⌘D looks at document.activeElement.closest('[data-row]') and duplicates
+  the focused row, falling back to the last row if focus is outside the table.
+  4. EditEntryModal.vue —
+    - Document-level keydown listener with proper Tab/Shift-Tab focus trap
+  (cycles between first and last focusable; brings escaped focus back into the
+  modal).
+    - Esc closes from anywhere in the modal.
+    - On open, the first form field gets focus; on close, focus returns to the
+  previously active element.
+    - role="dialog", aria-modal="true", aria-labelledby.
+    - window.confirm replaced with an inline two-step confirmation in the footer
+   ("Delete this entry? Cannot be undone." + Cancel / Confirm delete).
+  5. EntryRow.vue + EditEntryModal.vue — added request-id guards around every
+  async list fetch so stale responses can't overwrite a fresher narrower list.
+  6. EntryRow.vue — aria-label on every cell input/select, scoped per row (e.g.
+  Company, row 3). Modal selects/inputs got plain field-name aria-labels too.
+  7. useCompanyData.js — useCompanies() now returns a module-level singleton
+  ref, so SummaryCard / NewEntriesTab / EditEntryModal share the same reactive
+  list (network was already deduped; this dedupes the in-memory copies too).
+  8. HistoryTab.vue — Edit button is now bg-ink text-paper (always visible,
+  inverted), with a focus ring for keyboard users.
+
+✻ Worked for 6m 44s
+
+❯ perfect, 2 small adjusments now:                                              
+                                                                                
+  - make the edit button visible only when hover the row again                  
+  - doenst need to be uppercase the "showing" text on dropdown and in summary,  
+  make text normal                                                              
+
+⏺ Update(resources/js/components/HistoryTab.vue)
+  ⎿  Added 1 line, removed 1 line
+      183              <td class="px-3 py-2.5 text-right">
+      184                <button
+      185                  type="button"
+      186 -                class="inline-flex items-center gap-1 rounded-
+          -md bg-ink px-2.5 py-1 text-xs font-medium text-paper transitio
+          -n-colors hover:bg-ink-soft focus:outline-none focus:ring-2 foc
+          -us:ring-ink focus:ring-offset-1"                              
+      186 +                class="inline-flex items-center gap-1 rounded-
+          +md bg-ink px-2.5 py-1 text-xs font-medium text-paper opacity-0
+          + transition hover:bg-ink-soft focus:opacity-100 focus:outline-
+          +none focus:ring-2 focus:ring-ink focus:ring-offset-1 group-hov
+          +er:opacity-100"                                               
+      187                  @click="editing = entry"
+      188                >
+      189                  <svg width="12" height="12" viewBox="0 0 16 16
+           " fill="none" aria-hidden="true">
+
+⏺ Update(resources/js/components/CompanyFilter.vue)
+  ⎿  Added 1 line, removed 1 line
+      24  
+      25  <template>
+      26    <label class="flex items-center gap-2">
+      27 -    <span class="text-xs uppercase tracking-wider text-ink-mute
+         -">Showing</span>                                               
+      27 +    <span class="text-xs text-ink-mute">Showing</span>         
+      28      <div class="relative">
+      29        <select
+      30          :value="selectValue"
+
+⏺ Update(resources/js/components/SummaryCard.vue)
+  ⎿  Added 1 line, removed 1 line
+      68          <div
+      69              class="flex items-center justify-between border-b b
+          order-paper-line pb-4"
+      70          >
+      71 -            <p class="text-xs uppercase tracking-wider text-ink
+         --mute">                                                        
+      71 +            <p class="text-xs text-ink-mute">                  
+      72                  Showing {{ scopeLabel }}
+      73              </p>
+      74              <p v-if="loading" class="text-xs text-ink-mute">Loa
+          ding…</p>
+
+⏺ Bash(npm run build 2>&1 | tail -8)
+  ⎿  transforming...✓ 71 modules transformed.
+     rendering chunks...
+     computing gzip size...
+     … +5 lines (ctrl+o to expand)
+
+⏺ Both done:
+
+  - Edit button — back to opacity-0 by default, fades in on group-hover (row
+  hover) and on focus (so keyboard users can still reach it).
+  - "Showing" labels — removed uppercase tracking-wider from both
+  CompanyFilter.vue and SummaryCard.vue; now plain text.
+
+✻ Cogitated for 21s
+
+❯ perfect, now in the modal of editing an existing entry, the employee and      
+  project dropdowns should be the same comportament as the new entry row, fix   
+  that please                                                                   
+
+⏺ Update(resources/js/components/EditEntryModal.vue)
+  ⎿  Added 1 line
+       6    fetchProjectsForCompany,
+       7    fetchTasksForCompany,
+       8    fetchProjectsForEmployee,
+       9 +  fetchEmployeesForProject,                                    
+      10  } from '../composables/useCompanyData';
+      11  import { updateTimeEntry, deleteTimeEntry } from '../composable
+          s/useTimeEntries';
+      12  
+
+⏺ Update(resources/js/components/EditEntryModal.vue)
+  ⎿  Added 1 line
+      45  
+      46  let companyListsReqId = 0;
+      47  let projectsReqId = 0;
+      48 +let employeesReqId = 0;                                        
+      49  
+      50  const fieldClass = (field) => [
+      51    'field tabular-mono',
+
+⏺ Update(resources/js/components/EditEntryModal.vue)
+  ⎿  Added 14 lines, removed 5 lines
+      57  async function loadCompanyLists(companyId) {
+      58    if (!companyId) return;
+      59    const id = ++companyListsReqId;
+      60 -  const [t, e] = await Promise.all([                           
+      61 -    fetchTasksForCompany(companyId),                           
+      62 -    fetchEmployeesForCompany(companyId),                       
+      63 -  ]);                                                          
+      60 +  const t = await fetchTasksForCompany(companyId);             
+      61    if (id !== companyListsReqId) return;
+      62    tasks.value = t;
+      66 -  employees.value = e;                                         
+      63  }
+      64  
+      65  async function narrowProjectsToEmployee(companyId, employeeId) 
+          {
+     ...
+      75    projects.value = result;
+      76  }
+      77  
+      78 +async function narrowEmployeesToProject(companyId, projectId) {
+      79 +  if (!companyId) {                                            
+      80 +    employees.value = [];                                      
+      81 +    return;                                                    
+      82 +  }                                                            
+      83 +  const id = ++employeesReqId;                                 
+      84 +  const result = !projectId                                    
+      85 +    ? await fetchEmployeesForCompany(companyId)                
+      86 +    : await fetchEmployeesForProject(companyId, projectId);    
+      87 +  if (id !== employeesReqId) return;                           
+      88 +  employees.value = result;                                    
+      89 +}                                                              
+      90 +                                                               
+      91  watch(
+      92    () => form.value.company_id,
+      93    async (id, prev) => {
+
+⏺ Now update the watchers to mirror EntryRow's symmetric behavior — picking a
+  project narrows employees, picking an employee narrows projects, and changing
+  either one drops a now-invalid opposite selection.
+
+⏺ Update(resources/js/components/EditEntryModal.vue)
+  ⎿  Added 18 lines, removed 7 lines
+       92    () => form.value.company_id,
+       93    async (id, prev) => {
+       94      if (id === prev) return;
+       95 -    await loadCompanyLists(id);                               
+       95      if (prev !== undefined) {
+       96        form.value.employee_id = null;
+       97        form.value.project_id = null;
+       98        form.value.task_id = null;
+      100 -      const reqId = ++projectsReqId;                          
+      101 -      const result = await fetchProjectsForCompany(id);       
+      102 -      if (reqId === projectsReqId) projects.value = result;   
+      103 -    } else {                                                  
+      104 -      // Initial load: narrow to the employee already on the e
+          -ntry.                                                         
+      105 -      await narrowProjectsToEmployee(id, form.value.employee_i
+          -d);                                                           
+       99      }
+      100 +    // On initial mount the existing entry's employee/project 
+          +narrow each                                                   
+      101 +    // side. After a company change those are null, so each si
+          +de ends up as                                                 
+      102 +    // the full per-company list.                             
+      103 +    await Promise.all([                                       
+      104 +      loadCompanyLists(id),                                   
+      105 +      narrowProjectsToEmployee(id, form.value.employee_id),   
+      106 +      narrowEmployeesToProject(id, form.value.project_id),    
+      107 +    ]);                                                       
+      108    },
+      109    { immediate: true },
+      110  );
+     ...
+      119    },
+      120  );
+      121  
+      122 +watch(                                                        
+      123 +  () => form.value.project_id,                                
+      124 +  async (projectId) => {                                      
+      125 +    await narrowEmployeesToProject(form.value.company_id, proj
+          +ectId);                                                       
+      126 +    if (form.value.employee_id && !employees.value.some((e) =>
+          + e.id === form.value.employee_id)) {                          
+      127 +      form.value.employee_id = null;                          
+      128 +    }                                                         
+      129 +  },                                                          
+      130 +);                                                            
+      131 +                                                              
+      132  async function save() {
+      133    errors.value = {};
+      134    flash.value = null;
+
+⏺ Bash(npm run build 2>&1 | tail -8)  ⎿  transforming...✓ 71 modules transformed.
+     rendering chunks...
+     computing gzip size...
+     … +5 lines (ctrl+o to expand)
+
+⏺ Done. The modal's employee and project pickers now behave the same as
+  EntryRow:
+
+  - On open: the existing employee narrows the project list to projects they're
+  on, and the existing project narrows the employee list to people on that
+  project.
+  - Pick a different employee: projects re-narrow to that employee's projects;
+  if the current project isn't on that list, it's cleared (which then refreshes
+  the employees to the full company list).
+  - Pick a different project: employees re-narrow to people on that project; if
+  the current employee isn't on that list, they're cleared.
+  - Change company: employee/project/task reset, and both lists fall back to the
+   full per-company set.
+
+  All async fetches are wrapped in request-id guards (projectsReqId,
+  employeesReqId, companyListsReqId) so a slow earlier response can't overwrite
+  a fresher narrower one — same protection EntryRow already had.
+
+✻ Cooked for 1m 43s
+
+❯ change to the default hours input show the 0 as default, now starts empty on  
+  new entry row                                                                 
+
+⏺ Update(resources/js/components/NewEntriesTab.vue)
+  ⎿  Added 1 line, removed 1 line
+      33      employee_id: null,
+      34      project_id: null,
+      35      task_id: null,
+      36 -    hours: null,                                               
+      36 +    hours: 0,                                                  
+      37  });
+      38  
+      39  const rows = ref([blankRow()]);
+
+⏺ Bash(npm run build 2>&1 | tail -6)
+  ⎿  computing gzip size...
+     public/build/manifest.json              0.33 kB │ gzip:  0.16 kB
+     public/build/assets/app-DP84xdfD.css   58.17 kB │ gzip: 12.38 kB
+     … +3 lines (ctrl+o to expand)
+
+⏺ Done. New rows now start with hours: 0 instead of empty. The total counter at
+  the bottom already handles 0 correctly, and submitting with 0 will surface the
+   existing Hours must be at least 1 validation message — which is the right
+  behavior.
+
+✻ Churned for 30s
+
+❯ need to do some more improvements                                             
+                                                                                
+  - when changing the global dropdown select, the company in the new entry row  
+  must be empty -- now its getting selected with the last one                   
+  - need to increase the padding on the right of the dropdown inputs to text    
+  not be above the arrow                                                        
+  - when change the company to "unselected" in a row that are all selected      
+  already, the employee and project dropdown doesnt show the message to pick a  
+  company, fix that too                                                         
+
+⏺ Let me look at the CSS for the cell-field padding and check the watch
+  behavior.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Now I'll apply the three fixes.
+
+  Fix 1: NewEntriesTab — rows always start empty, no auto-fill from global 
+  dropdown.
+
+⏺ Update(resources/js/components/NewEntriesTab.vue)
+  ⎿  Added 1 line, removed 1 line
+      28  }
+      29  
+      30  const blankRow = () => ({
+      31 -    company_id: selectedCompanyId.value ?? null,               
+      31 +    company_id: null,                                          
+      32      date: today(),
+      33      employee_id: null,
+      34      project_id: null,
+
+⏺ Update(resources/js/components/NewEntriesTab.vue)
+  ⎿  Removed 7 lines
+      65      errors.value = next;
+      66  }
+      67  
+      68 -watch(selectedCompanyId, (next) => {                           
+      69 -    if (!next) return;                                         
+      70 -    rows.value = rows.value.map((row) =>                       
+      71 -        row.company_id == null ? { ...row, company_id: next } :
+         - row,                                                          
+      72 -    );                                                         
+      73 -});                                                            
+      74 -                                                               
+      68  function onKeydown(event) {
+      69      const mod = event.metaKey || event.ctrlKey;
+      70      if (!mod) return;
+
+  Searched for 1 pattern (ctrl+o to expand)
+
+⏺ Update(resources/js/components/NewEntriesTab.vue)
+  ⎿  Added 1 line, removed 2 lines
+       1  <script setup>
+       2 -import { ref, inject, onMounted, onBeforeUnmount, computed, wat
+         -ch } from "vue";                                               
+       2 +import { ref, inject, onMounted, onBeforeUnmount, computed } fr
+         +om "vue";                                                      
+       3  import EntryRow from "./EntryRow.vue";
+       4  import { useCompanies } from "../composables/useCompanyData";
+       5  import { createTimeEntries } from "../composables/useTimeEntrie
+          s";
+       6  
+       7 -const selectedCompanyId = inject("selectedCompanyId");         
+       7  const refreshSummary = inject("refreshSummary", () => {});
+       8  const { companies, load: loadCompanies } = useCompanies();
+       9  onMounted(loadCompanies);
+
+⏺ Fix 2: CSS — add right padding to selects so text doesn't overlap the native 
+  arrow.
+
+⏺ Update(resources/css/app.css)
+  ⎿  Added 4 lines
+       95  .field {
+       96      @apply w-full rounded-md border border-paper-line bg-paper
+            px-2.5 py-1.5 text-sm text-ink transition-colors;
+       97  }
+       98 +/* Native <select> arrows need extra right padding so long nam
+          +es don't overlap them. */                                     
+       99 +select.field {                                                
+      100 +    @apply pr-8;                                              
+      101 +}                                                             
+      102  .field:hover {
+      103      @apply border-paper-line-strong;
+      104  }
+
+⏺ Update(resources/css/app.css)
+  ⎿  Added 3 lines
+      118  .cell-field {
+      119      @apply w-full rounded-md border border-transparent bg-tran
+           sparent px-2 py-1 text-sm text-ink transition-colors;
+      120  }
+      121 +select.cell-field {                                           
+      122 +    @apply pr-7;                                              
+      123 +}                                                             
+      124  .cell-field:hover {
+      125      @apply bg-paper-tint;
+      126  }
+
+⏺ Fix 3: EntryRow — clear dependent IDs before refreshing the lists, so when the
+   company is unset the empty-option placeholder ("pick a company") renders 
+  consistently.
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 5 lines, removed 1 line
+       93      () => row.value.company_id,
+       94      async (id, prev) => {
+       95          if (id === prev) return;
+       96 -        await refreshCompanyLists(id);                        
+       96 +        // Clear dependent IDs *before* refreshing the lists. 
+          +If the lists                                                  
+       97 +        // are emptied while employee_id/project_id still hold
+          + their old                                                    
+       98 +        // values, the <select>s briefly point to options that
+          + no longer                                                    
+       99 +        // exist and render blank instead of the "pick a compa
+          +ny" placeholder.                                              
+      100          if (prev !== undefined) {
+      101              patch({ employee_id: null, project_id: null, task_
+           id: null });
+      102          }
+      103 +        await refreshCompanyLists(id);                        
+      104      },
+      105      { immediate: true },
+      106  );
+
+⏺ Bash(npm run build 2>&1 | tail -10)
+  ⎿  vite v8.0.10 building client environment for production...
+     transforming...✓ 71 modules transformed.
+     rendering chunks...
+     … +6 lines (ctrl+o to expand)
+
+⏺ All three fixes applied and built clean.
+
+  1. Global dropdown no longer touches new entry rows. Removed the watch that
+  auto-filled empty rows when the global company changed, and changed blankRow()
+   to always start with company_id: null. The global dropdown now only affects
+  the SummaryCard scope and the History filter — it never writes into a New
+  Entries row. Also dropped the now-unused inject('selectedCompanyId') and watch
+   import.
+  2. Right padding on selects — added select.field { @apply pr-8 } and
+  select.cell-field { @apply pr-7 } to app.css so the native dropdown arrow
+  doesn't overlap long company/employee/project/task names.
+  3. "Pick a company" placeholder shows correctly when unsetting. Reordered the
+  company watcher in EntryRow.vue: dependent IDs (employee_id, project_id,
+  task_id) are nulled before refreshCompanyLists() runs. Previously, the lists
+  were emptied while the IDs still held their old values for one microtask,
+  leaving the <select>s pointing at options that no longer existed — they
+  rendered blank instead of falling back to the empty option (whose label is
+  "pick a company"). Now the IDs are nulled first, the select value becomes "",
+  and the placeholder renders consistently.
+
+✻ Worked for 2m 48s
+
+❯ yeah but if are some company selected on the global dropdown, must be only    
+  that one pre-selected on all entry rows, and only that -- only be changeable  
+  if are selected all on the top                                                
+  Read 1 file (ctrl+o to expand)
+  ⎿  You've hit your limit · resets 4:40pm (America/Sao_Paulo)
+     /upgrade or /extra-usage to finish what you’re working on.
+
+✻ Crunched for 1m 9s
+
+❯ continue please                                                               
+
+⏺ Update(resources/js/components/NewEntriesTab.vue)
+  ⎿  Added 2 lines, removed 1 line
+       1  <script setup>
+       2 -import { ref, inject, onMounted, onBeforeUnmount, computed } fr
+         -om "vue";                                                      
+       2 +import { ref, inject, onMounted, onBeforeUnmount, computed, wat
+         +ch } from "vue";                                               
+       3  import EntryRow from "./EntryRow.vue";
+       4  import { useCompanies } from "../composables/useCompanyData";
+       5  import { createTimeEntries } from "../composables/useTimeEntrie
+          s";
+       6  
+       7 +const selectedCompanyId = inject("selectedCompanyId");         
+       8  const refreshSummary = inject("refreshSummary", () => {});
+       9  const { companies, load: loadCompanies } = useCompanies();
+      10  onMounted(loadCompanies);
+
+⏺ Update(resources/js/components/NewEntriesTab.vue)
+  ⎿  Added 13 lines, removed 1 line
+      28  }
+      29  
+      30  const blankRow = () => ({
+      31 -    company_id: null,                                          
+      31 +    company_id: selectedCompanyId.value ?? null,               
+      32      date: today(),
+      33      employee_id: null,
+      34      project_id: null,
+     ...
+      45      rows.value.reduce((sum, row) => sum + (Number(row.hours) ||
+           0), 0),
+      46  );
+      47  
+      48 +// When the global dropdown is set to a specific company, every
+         + row's company                                                 
+      49 +// snaps to it and the cell is locked. Switching back to "All" 
+         +leaves rows                                                    
+      50 +// alone — the user can change companies per row again.        
+      51 +const companyLocked = computed(() => selectedCompanyId.value !=
+         += null);                                                       
+      52 +                                                               
+      53 +watch(selectedCompanyId, (next) => {                           
+      54 +    if (next == null) return;                                  
+      55 +    rows.value = rows.value.map((row) =>                       
+      56 +        row.company_id === next ? row : { ...row, company_id: n
+         +ext },                                                         
+      57 +    );                                                         
+      58 +});                                                            
+      59 +                                                               
+      60  function addRow() {
+      61      rows.value.push(blankRow());
+      62  }
+
+⏺ Now pass the companyLocked flag to EntryRow.
+
+⏺ Update(resources/js/components/NewEntriesTab.vue)
+  ⎿  Added 1 line
+      193                          :companies="companies"
+      194                          :errors="errors[i] ?? {}"
+      195                          :can-remove="rows.length > 1"
+      196 +                        :company-locked="companyLocked"       
+      197                          @update:model-value="rows[i] = $event"
+      198                          @duplicate="duplicateRow(i)"
+      199                          @remove="removeRow(i)"
+
+⏺ Now add the prop and apply it to the company select in EntryRow.
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 4 lines
+      30          type: Boolean,
+      31          default: true,
+      32      },
+      33 +    companyLocked: {                                           
+      34 +        type: Boolean,                                         
+      35 +        default: false,                                        
+      36 +    },                                                         
+      37  });
+      38  
+      39  const emit = defineEmits(["update:modelValue", "duplicate", "re
+          move"]);
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 2 lines, removed 1 line
+      163              <select
+      164                  :class="fieldClass('company_id')"
+      165                  :value="row.company_id ?? ''"
+      166 +                :disabled="companyLocked"                     
+      167                  :data-row="index"
+      168                  :aria-label="ariaLabel('company_id')"
+      169                  data-field="company_id"
+     ...
+      177                          })
+      178                  "
+      179              >
+      179 -                <option value="">—</option>                   
+      180 +                <option v-if="!companyLocked" value="">—</opti
+          +on>                                                           
+      181                  <option v-for="c in companies" :key="c.id" :va
+           lue="c.id">
+      182                      {{ c.name }}
+      183                  </option>
+
+⏺ Bash(npm run build 2>&1 | tail -8)
+  ⎿  transforming...✓ 71 modules transformed.
+     rendering chunks...
+     computing gzip size...
+     … +5 lines (ctrl+o to expand)
+
+⏺ Done. Behavior now:
+
+  - Global = a specific company (e.g. Company A): every existing row's company
+  snaps to A (rows that already had a different company lose their
+  employee/project/task — same chain that fires whenever the company changes),
+  every new row created via Add row / ⌘B / ⌘D inherits A from blankRow(), and
+  the company <select> is :disabled so the user can't change it per-row. The
+  placeholder "—" option is hidden when locked, so there's nothing to switch to.
+  - Global = All: the lock lifts. Existing rows keep whatever company they had;
+  the user can change company freely per row, and new rows start at null (with
+  the "—" placeholder back in the dropdown).
+  - Switching A → B globally: all rows snap to B; each row's existing
+  employee/project/task is cleared by the existing company-change watcher in
+  EntryRow.vue (since the values would no longer be valid under B).
+
+✻ Worked for 49s
+
+❯ it's strange because this block the user and forces to do a not very good ux, 
+   how can we fix that? just set as default initial value when change the       
+  dropdown on top, but let the user change the copmany if he wants in the entry 
+   row? i think this is the best solution                                       
+
+⏺ Update(resources/js/components/NewEntriesTab.vue)
+  ⎿  Added 4 lines, removed 5 lines
+      45      rows.value.reduce((sum, row) => sum + (Number(row.hours) ||
+           0), 0),
+      46  );
+      47  
+      48 -// When the global dropdown is set to a specific company, every
+         - row's company                                                 
+      49 -// snaps to it and the cell is locked. Switching back to "All" 
+         -leaves rows                                                    
+      50 -// alone — the user can change companies per row again.        
+      51 -const companyLocked = computed(() => selectedCompanyId.value !=
+         -= null);                                                       
+      52 -                                                               
+      48 +// When the global dropdown changes to a specific company, ever
+         +y row's                                                        
+      49 +// company is set to it as a default. The user can still change
+         + the company                                                   
+      50 +// per row afterwards — the global dropdown only seeds new rows
+         + and re-seeds                                                  
+      51 +// existing ones. Switching back to "All" leaves the rows untou
+         +ched.                                                          
+      52  watch(selectedCompanyId, (next) => {
+      53      if (next == null) return;
+      54      rows.value = rows.value.map((row) =>
+
+⏺ Update(resources/js/components/NewEntriesTab.vue)
+  ⎿  Removed 1 line
+      192                          :companies="companies"
+      193                          :errors="errors[i] ?? {}"
+      194                          :can-remove="rows.length > 1"
+      195 -                        :company-locked="companyLocked"       
+      195                          @update:model-value="rows[i] = $event"
+      196                          @duplicate="duplicateRow(i)"
+      197                          @remove="removeRow(i)"
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Removed 4 lines
+      30          type: Boolean,
+      31          default: true,
+      32      },
+      33 -    companyLocked: {                                           
+      34 -        type: Boolean,                                         
+      35 -        default: false,                                        
+      36 -    },                                                         
+      33  });
+      34  
+      35  const emit = defineEmits(["update:modelValue", "duplicate", "re
+          move"]);
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 1 line, removed 2 lines
+      159              <select
+      160                  :class="fieldClass('company_id')"
+      161                  :value="row.company_id ?? ''"
+      162 -                :disabled="companyLocked"                     
+      162                  :data-row="index"
+      163                  :aria-label="ariaLabel('company_id')"
+      164                  data-field="company_id"
+     ...
+      172                          })
+      173                  "
+      174              >
+      176 -                <option v-if="!companyLocked" value="">—</opti
+          -on>                                                           
+      175 +                <option value="">—</option>                   
+      176                  <option v-for="c in companies" :key="c.id" :va
+           lue="c.id">
+      177                      {{ c.name }}
+      178                  </option>
+
+⏺ Bash(npm run build 2>&1 | tail -8)
+  ⎿  transforming...✓ 71 modules transformed.
+     rendering chunks...
+     computing gzip size...
+     … +5 lines (ctrl+o to expand)
+
+⏺ Done. The lock is gone — the global dropdown now just acts as a
+  default-seeder:
+
+  - Setting global to a specific company: every row's company snaps to it as a
+  starting default.
+  - Adding a new row: it inherits the global value if one is set (via
+  blankRow()), otherwise starts empty.
+  - Switching global back to "All": existing rows keep whatever they have, no
+  change.
+  - Per-row freedom: the company <select> is fully editable in every row at all
+  times. The user can override the seeded value, including back to — (none).
+
+  The empty-option placeholder ("—") is always available again, so unsetting
+  works in every state.
+
+✻ Churned for 37s
+
+❯ perfect, just commit all the changes please, using my git                     
+
+⏺ Bash(git -C /Users/gustavopertile/workplace/extras/mason status 2>&1 | head
+      -50)
+  ⎿  On branch main
+     Changes not staged for commit:
+       (use "git add <file>..." to update what will be committed)
+     … +17 lines (ctrl+o to expand)
+⏺ Bash(git -C /Users/gustavopertile/workplace/extras/mason log --oneline -10
+      2>&1)
+  ⎿  611566a update README.md
+     d38576d feat: create summary api controllers and routes
+     42630b5 feat: update hours to be only integers numbers
+     … +12 lines (ctrl+o to expand)
+
+⏺ Bash(git -C /Users/gustavopertile/workplace/extras/mason add
+      resources/css/app.css resources/js/App.vue
+      resources/js/components/CompanyFilter.vue resources/js/compon…)
+  ⎿  [main 5279ff7] feat: UX polish, accessibility, and modal hardening
+      9 files changed, 304 insertions(+), 157 deletions(-)
+
+⏺ Bash(git -C /Users/gustavopertile/workplace/extras/mason status)
+  ⎿  On branch main
+     Untracked files:
+       (use "git add <file>..." to include in what will be committed)
+     … +4 lines (ctrl+o to expand)
+
+⏺ Committed as 5279ff7 on main — 9 files, +304/-157.
+
+  Note: ai-sessions/ is still untracked. I left it out since it wasn't part of
+  the UX work we just did and I wanted to be sure I wasn't sweeping in unrelated
+   session exports without your say-so. If you want it in, let me know and I'll
+  add it as a separate commit.
+
+✻ Crunched for 47s

@@ -1,0 +1,824 @@
+╭─── Claude Code v2.1.123 ─────────────────────────────────────────────────────╮
+│                                                    │ Tips for getting        │
+│                Welcome back Gustavo!               │ started                 │
+│                                                    │ Run /init to create a … │
+│                       ▐▛███▜▌                      │ ─────────────────────── │
+│                      ▝▜█████▛▘                     │ What's new              │
+│                        ▘▘ ▝▝                       │ The `/model` picker no… │
+│  Opus 4.7 · Claude Pro · gu.follador@gmail.com's   │ - Added `claude projec… │
+│  Organization                                      │ `--dangerously-skip-pe… │
+│              ~/workplace/extras/mason              │ /release-notes for more │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+❯ /clear                                                                        
+  ⎿  (no content)
+
+❯ need to do one more adjustment, if the user select an project first, load     
+  only the employee that can select for that project too -- now i can select an 
+   project and select any order employee, even if they aren't able to be in     
+  that project, on @resources/js/components/EntryRow.vue                        
+  ⎿  Read resources/js/components/EntryRow.vue (341 lines)
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 1 line
+       5      fetchProjectsForCompany,
+       6      fetchTasksForCompany,
+       7      fetchProjectsForEmployee,
+       8 +    fetchEmployeesForProject,                                  
+       9  } from "../composables/useCompanyData";
+      10  
+      11  const props = defineProps({
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 9 lines
+      71      projects.value = await fetchProjectsForEmployee(companyId, 
+          employeeId);
+      72  }
+      73  
+      74 +async function narrowEmployeesToProject(companyId, projectId) {
+      75 +    if (!companyId) return;                                    
+      76 +    if (!projectId) {                                          
+      77 +        employees.value = await fetchEmployeesForCompany(compan
+         +yId);                                                          
+      78 +        return;                                                
+      79 +    }                                                          
+      80 +    employees.value = await fetchEmployeesForProject(companyId,
+         + projectId);                                                   
+      81 +}                                                              
+      82 +                                                               
+      83  watch(
+      84      () => row.value.company_id,
+      85      async (id, prev) => {
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 15 lines, removed 2 lines
+      92      { immediate: true },
+      93  );
+      94  
+      95 -// Picking an employee narrows the project list — and silently 
+         -drops a                                                        
+      96 -// stale project selection. Picking a project does NOT touch th
+         -e employee.                                                    
+      95 +// Employee ↔ project narrow each other symmetrically: picking 
+         +either side                                                    
+      96 +// filters the opposite list and silently drops a now-invalid s
+         +election.                                                      
+      97  watch(
+      98      () => row.value.employee_id,
+      99      async (employeeId) => {
+     ...
+      107      },
+      108  );
+      109  
+      110 +watch(                                                        
+      111 +    () => row.value.project_id,                               
+      112 +    async (projectId) => {                                    
+      113 +        await narrowEmployeesToProject(row.value.company_id, p
+          +rojectId);                                                    
+      114 +        if (                                                  
+      115 +            row.value.employee_id &&                          
+      116 +            !employees.value.some((e) => e.id === row.value.em
+          +ployee_id)                                                    
+      117 +        ) {                                                   
+      118 +            patch({ employee_id: null });                     
+      119 +        }                                                     
+      120 +    },                                                        
+      121 +);                                                            
+      122 +                                                              
+      123  const fieldClass = (field) => [
+      124      "cell-field tabular-nums",
+      125      props.errors[field] ? "cell-field-error" : "",
+
+⏺ Let me verify the final state of the file.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Picking a project now narrows the employee list to only those assigned to that
+   project (using the existing fetchEmployeesForProject composable). The
+  behavior is symmetric with the employee → project narrow: a stale employee
+  selection is silently dropped, and clearing the project restores the full
+  company employee list.
+
+✻ Sautéed for 41s
+
+❯ i dont think that make sense this to hide projects that is not from that      
+  employee, need to go back to what was, that is, always can select any project 
+   or employee - if has another one selected already, and an employee doesnt    
+  match the project, clean up the employee, for example, and vice versa         
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Error editing file
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 19 lines, removed 33 lines
+      49          employees.value = [];
+      50          return;
+      51      }
+      52 -    // Loading employees + tasks always; projects load from the
+         - wider company                                                 
+      53 -    // list initially, then narrow once an employee is picked. 
+      52      const [t, e, p] = await Promise.all([
+      53          fetchTasksForCompany(companyId),
+      54          fetchEmployeesForCompany(companyId),
+     ...
+      59      projects.value = p;
+      60  }
+      61  
+      64 -async function narrowProjectsToEmployee(companyId, employeeId) 
+         -{                                                              
+      65 -    if (!companyId) return;                                    
+      66 -    if (!employeeId) {                                         
+      67 -        // No employee selected: show every project on the comp
+         -any.                                                           
+      68 -        projects.value = await fetchProjectsForCompany(companyI
+         -d);                                                            
+      69 -        return;                                                
+      70 -    }                                                          
+      71 -    projects.value = await fetchProjectsForEmployee(companyId, 
+         -employeeId);                                                   
+      72 -}                                                              
+      73 -                                                               
+      74 -async function narrowEmployeesToProject(companyId, projectId) {
+      75 -    if (!companyId) return;                                    
+      76 -    if (!projectId) {                                          
+      77 -        employees.value = await fetchEmployeesForCompany(compan
+         -yId);                                                          
+      78 -        return;                                                
+      79 -    }                                                          
+      80 -    employees.value = await fetchEmployeesForProject(companyId,
+         - projectId);                                                   
+      81 -}                                                              
+      82 -                                                               
+      62  watch(
+      63      () => row.value.company_id,
+      64      async (id, prev) => {
+     ...
+       71      { immediate: true },
+       72  );
+       73  
+       95 -// Employee ↔ project narrow each other symmetrically: picking
+          - either side                                                  
+       96 -// filters the opposite list and silently drops a now-invalid 
+          -selection.                                                    
+       74 +// Project and employee dropdowns always show the full company
+          + list. When one                                               
+       75 +// side changes, validate the *other* side against the new pai
+          +ring and clear                                                
+       76 +// it if they don't match.                                    
+       77  watch(
+       78      () => row.value.employee_id,
+       79      async (employeeId) => {
+      100 -        await narrowProjectsToEmployee(row.value.company_id, e
+          -mployeeId);                                                   
+      101 -        if (                                                  
+      102 -            row.value.project_id &&                           
+      103 -            !projects.value.some((p) => p.id === row.value.pro
+          -ject_id)                                                      
+      104 -        ) {                                                   
+       80 +        if (!row.value.company_id || !employeeId || !row.value
+          +.project_id) {                                                
+       81 +            return;                                           
+       82 +        }                                                     
+       83 +        const allowed = await fetchProjectsForEmployee(       
+       84 +            row.value.company_id,                             
+       85 +            employeeId,                                       
+       86 +        );                                                    
+       87 +        if (!allowed.some((p) => p.id === row.value.project_id
+          +)) {                                                          
+       88              patch({ project_id: null });
+       89          }
+       90      },
+     ...
+       93  watch(
+       94      () => row.value.project_id,
+       95      async (projectId) => {
+      113 -        await narrowEmployeesToProject(row.value.company_id, p
+          -rojectId);                                                    
+      114 -        if (                                                  
+      115 -            row.value.employee_id &&                          
+      116 -            !employees.value.some((e) => e.id === row.value.em
+          -ployee_id)                                                    
+      117 -        ) {                                                   
+       96 +        if (!row.value.company_id || !projectId || !row.value.
+          +employee_id) {                                                
+       97 +            return;                                           
+       98 +        }                                                     
+       99 +        const allowed = await fetchEmployeesForProject(       
+      100 +            row.value.company_id,                             
+      101 +            projectId,                                        
+      102 +        );                                                    
+      103 +        if (!allowed.some((e) => e.id === row.value.employee_i
+          +d)) {                                                         
+      104              patch({ employee_id: null });
+      105          }
+      106      },
+
+⏺ Now I need to fix the project dropdown placeholder that mentions narrowing.
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Error editing file
+
+  Searched for 2 patterns (ctrl+o to expand)
+
+⏺ Placeholders are already simple. The behavior is now what you wanted: the
+  project and employee dropdowns always show the full company list; whichever
+  side you change last, the other side is validated and silently cleared if the
+  pair doesn't match.
+
+✻ Sautéed for 49s
+
+❯ /effort                                                                       
+  ⎿  Set effort level to xhigh: Deeper reasoning than high, just below maximum
+     (Opus 4.7 only)
+
+❯ yeah but you dont need to cleanup other dropdown if the employee or project   
+  belongs to each other, doesnt make sense to overall wtf -- just clean up if   
+  doesnt have an match on each other, need to select everything to submit a new 
+   entry                                                                        
+
+⏺ Let me verify the current state of the file matches what you described.
+
+  Read 1 file (ctrl+o to expand)
+⏺ That is exactly what the current file does — let me walk through it so you can
+   verify:
+
+  - Dropdowns are never narrowed. refreshCompanyLists (lines 45–60) always loads
+   fetchEmployeesForCompany and fetchProjectsForCompany — the full company
+  lists. Nothing else ever overwrites those employees / projects refs. So you
+  can always pick any employee and any project on the company.
+  - When you change employee (lines 77–91): if a project is also already
+  selected, it fetches the projects allowed for that employee and only clears
+  project_id when it's not in that allowed list. Valid pair → nothing happens.
+  No project selected yet → early return, nothing happens.
+  - When you change project (lines 93–107): symmetric — only clears employee_id
+  if the currently selected employee isn't in the allowed list for that project.
+   Valid pair → nothing happens.
+
+  So the rule is: clear the other side only on mismatch, never on a valid pair,
+  and the dropdowns themselves stay full. If you're seeing something different
+  in the browser, can you tell me the exact steps (which company, which order
+  you picked, what cleared)? That'd help me find the bug.
+
+✻ Cogitated for 2m 16s
+
+❯ no, just comeback what it was before you changed that please                  
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Removed 1 line
+       5      fetchProjectsForCompany,
+       6      fetchTasksForCompany,
+       7      fetchProjectsForEmployee,
+       8 -    fetchEmployeesForProject,                                  
+       8  } from "../composables/useCompanyData";
+       9  
+      10  const props = defineProps({
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 19 lines, removed 27 lines
+      48          employees.value = [];
+      49          return;
+      50      }
+      51 +    // Loading employees + tasks always; projects load from the
+         + wider company                                                 
+      52 +    // list initially, then narrow once an employee is picked. 
+      53      const [t, e, p] = await Promise.all([
+      54          fetchTasksForCompany(companyId),
+      55          fetchEmployeesForCompany(companyId),
+     ...
+      60      projects.value = p;
+      61  }
+      62  
+      63 +async function narrowProjectsToEmployee(companyId, employeeId) 
+         +{                                                              
+      64 +    if (!companyId) return;                                    
+      65 +    if (!employeeId) {                                         
+      66 +        // No employee selected: show every project on the comp
+         +any.                                                           
+      67 +        projects.value = await fetchProjectsForCompany(companyI
+         +d);                                                            
+      68 +        return;                                                
+      69 +    }                                                          
+      70 +    projects.value = await fetchProjectsForEmployee(companyId, 
+         +employeeId);                                                   
+      71 +}                                                              
+      72 +                                                               
+      73  watch(
+      74      () => row.value.company_id,
+      75      async (id, prev) => {
+     ...
+       82      { immediate: true },
+       83  );
+       84  
+       73 -// Project and employee dropdowns always show the full company
+          - list. When one                                               
+       74 -// side changes, validate the *other* side against the new pai
+          -ring and clear                                                
+       75 -// it if they don't match.                                    
+       85 +// Picking an employee narrows the project list — and silently
+          + drops a                                                      
+       86 +// stale project selection. Picking a project does NOT touch t
+          +he employee.                                                  
+       87  watch(
+       88      () => row.value.employee_id,
+       89      async (employeeId) => {
+       79 -        if (!row.value.company_id || !employeeId || !row.value
+          -.project_id) {                                                
+       80 -            return;                                           
+       81 -        }                                                     
+       82 -        const allowed = await fetchProjectsForEmployee(       
+       83 -            row.value.company_id,                             
+       84 -            employeeId,                                       
+       85 -        );                                                    
+       86 -        if (!allowed.some((p) => p.id === row.value.project_id
+          -)) {                                                          
+       90 +        await narrowProjectsToEmployee(row.value.company_id, e
+          +mployeeId);                                                   
+       91 +        if (                                                  
+       92 +            row.value.project_id &&                           
+       93 +            !projects.value.some((p) => p.id === row.value.pro
+          +ject_id)                                                      
+       94 +        ) {                                                   
+       95              patch({ project_id: null });
+       96          }
+       97      },
+       98  );
+       99  
+       92 -watch(                                                        
+       93 -    () => row.value.project_id,                               
+       94 -    async (projectId) => {                                    
+       95 -        if (!row.value.company_id || !projectId || !row.value.
+          -employee_id) {                                                
+       96 -            return;                                           
+       97 -        }                                                     
+       98 -        const allowed = await fetchEmployeesForProject(       
+       99 -            row.value.company_id,                             
+      100 -            projectId,                                        
+      101 -        );                                                    
+      102 -        if (!allowed.some((e) => e.id === row.value.employee_i
+          -d)) {                                                         
+      103 -            patch({ employee_id: null });                     
+      104 -        }                                                     
+      105 -    },                                                        
+      106 -);                                                            
+      107 -                                                              
+      100  const fieldClass = (field) => [
+      101      "cell-field tabular-nums",
+      102      props.errors[field] ? "cell-field-error" : "",
+
+⏺ Now I need to restore the original project dropdown placeholder.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 7 lines, removed 1 line
+      202                  "
+      203              >
+      204                  <option value="">
+      205 -                    {{ !row.company_id ? "pick a company" : "—
+          -" }}                                                          
+      205 +                    {{                                        
+      206 +                        !row.company_id                       
+      207 +                            ? "pick a company"                
+      208 +                            : !row.employee_id                
+      209 +                              ? "— (pick an employee to narrow
+          +)"                                                            
+      210 +                              : "—"                           
+      211 +                    }}                                        
+      212                  </option>
+      213                  <option v-for="p in projects" :key="p.id" :val
+           ue="p.id">
+      214                      {{ p.name }}
+
+⏺ Reverted. The file is back to its original state: only the employee → project
+  narrowing exists, project doesn't touch employee, and the project placeholder
+  hint is restored.
+
+✻ Cogitated for 28s
+
+❯ ok, now, just change that, if i select an project before an employee, change  
+  the dropdown of employees to show only the employees that match with that     
+  project -- just this                                                          
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 1 line
+       5      fetchProjectsForCompany,
+       6      fetchTasksForCompany,
+       7      fetchProjectsForEmployee,
+       8 +    fetchEmployeesForProject,                                  
+       9  } from "../composables/useCompanyData";
+      10  
+      11  const props = defineProps({
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 10 lines
+      71      projects.value = await fetchProjectsForEmployee(companyId, 
+          employeeId);
+      72  }
+      73  
+      74 +async function narrowEmployeesToProject(companyId, projectId) {
+      75 +    if (!companyId) return;                                    
+      76 +    if (!projectId) {                                          
+      77 +        // No project selected: show every employee on the comp
+         +any.                                                           
+      78 +        employees.value = await fetchEmployeesForCompany(compan
+         +yId);                                                          
+      79 +        return;                                                
+      80 +    }                                                          
+      81 +    employees.value = await fetchEmployeesForProject(companyId,
+         + projectId);                                                   
+      82 +}                                                              
+      83 +                                                               
+      84  watch(
+      85      () => row.value.company_id,
+      86      async (id, prev) => {
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 15 lines, removed 2 lines
+       93      { immediate: true },
+       94  );
+       95  
+       96 -// Picking an employee narrows the project list — and silently
+          - drops a                                                      
+       97 -// stale project selection. Picking a project does NOT touch t
+          -he employee.                                                  
+       96 +// Employee ↔ project narrow each other symmetrically: picking
+          + either side                                                  
+       97 +// filters the opposite list and silently drops a now-invalid 
+          +selection.                                                    
+       98  watch(
+       99      () => row.value.employee_id,
+      100      async (employeeId) => {
+     ...
+      108      },
+      109  );
+      110  
+      111 +watch(                                                        
+      112 +    () => row.value.project_id,                               
+      113 +    async (projectId) => {                                    
+      114 +        await narrowEmployeesToProject(row.value.company_id, p
+          +rojectId);                                                    
+      115 +        if (                                                  
+      116 +            row.value.employee_id &&                          
+      117 +            !employees.value.some((e) => e.id === row.value.em
+          +ployee_id)                                                    
+      118 +        ) {                                                   
+      119 +            patch({ employee_id: null });                     
+      120 +        }                                                     
+      121 +    },                                                        
+      122 +);                                                            
+      123 +                                                              
+      124  const fieldClass = (field) => [
+      125      "cell-field tabular-nums",
+      126      props.errors[field] ? "cell-field-error" : "",
+
+⏺ Done. Picking a project now narrows the employee dropdown to only employees
+  that match that project (mirroring the existing employee → project narrowing).
+   Stale selections on the other side are dropped silently.
+
+✻ Sautéed for 23s
+
+❯ now, the shortcuts only work if i'm focused on some input, change to work     
+  anytime that i'm focused on the page, doesnt need to be focus on input only   
+
+  Searched for 2 patterns, read 1 file (ctrl+o to expand)
+
+⏺ Update(resources/js/components/NewEntriesTab.vue)
+  ⎿  Added 1 line, removed 1 line
+      1  <script setup>
+      2 -import { ref, inject, onMounted, computed, watch } from "vue";  
+      2 +import { ref, inject, onMounted, onBeforeUnmount, computed, watc
+        +h } from "vue";                                                 
+      3  import EntryRow from "./EntryRow.vue";
+      4  import { useCompanies } from "../composables/useCompanyData";
+      5  import { createTimeEntries } from "../composables/useTimeEntries
+         ";
+
+⏺ Update(resources/js/components/NewEntriesTab.vue)
+  ⎿  Added 3 lines
+      71      }
+      72  }
+      73  
+      74 +onMounted(() => window.addEventListener("keydown", onKeydown));
+      75 +onBeforeUnmount(() => window.removeEventListener("keydown", onK
+         +eydown));                                                      
+      76 +                                                               
+      77  async function submit() {
+      78      errors.value = {};
+      79      flash.value = null;
+
+⏺ Update(resources/js/components/NewEntriesTab.vue)
+  ⎿  Added 1 line, removed 1 line
+      116  </script>
+      117  
+      118  <template>
+      119 -    <section class="space-y-4" @keydown="onKeydown">          
+      119 +    <section class="space-y-4">                               
+      120          <div
+      121              v-if="flash"
+      122              :class="[
+
+⏺ Moved the keydown listener from the section to window, registered on mount and
+   torn down on unmount. The ⌘B / ⌘D / ⌘↵ shortcuts now fire anywhere on the
+  page while this tab is active, regardless of focus.
+
+✻ Cooked for 30s
+
+❯ fix the hours on database to match the front, only integers hours please, now 
+   has some break hours showing                                                 
+  Searched for 2 patterns, read 9 files, listed 1 directory (ctrl+o to expand)
+
+⏺ Now I'll make all the changes to enforce integer hours throughout.
+
+⏺ Update(database/migrations/2026_05_02_163133_create_time_entries_table.php)
+  ⎿  Added 1 line, removed 1 line
+      18              $table->foreignId('project_id')->constrained()->cas
+          cadeOnDelete();
+      19              $table->foreignId('task_id')->constrained()->cascad
+          eOnDelete();
+      20              $table->date('date');
+      21 -            $table->decimal('hours', 5, 2);                    
+      21 +            $table->unsignedTinyInteger('hours');              
+      22              $table->timestamps();
+      23  
+      24              // Speeds up the business-rule lookup
+
+⏺ Update(app/Models/TimeEntry.php)
+  ⎿  Added 1 line, removed 1 line
+      24      {
+      25          return [
+      26              'date' => 'date',
+      27 -            'hours' => 'decimal:2',                            
+      27 +            'hours' => 'integer',                              
+      28          ];
+      29      }
+      30  
+
+⏺ Update(app/Http/Resources/TimeEntryResource.php)
+  ⎿  Added 1 line, removed 1 line
+      19          return [
+      20              'id'       => $this->id,
+      21              'date'     => $this->date->format('Y-m-d'),
+      22 -            'hours'    => (float) $this->hours,                
+      22 +            'hours'    => (int) $this->hours,                  
+      23              'company'  => ['id' => $this->company->id,  'name' 
+          => $this->company->name],
+      24              'employee' => ['id' => $this->employee->id, 'name' 
+          => $this->employee->name],
+      25              'project'  => ['id' => $this->project->id,  'name' 
+          => $this->project->name],
+
+⏺ Update(app/Http/Controllers/Api/SummaryController.php)
+  ⎿  Added 2 lines, removed 2 lines
+      36                  'scope'             => $companyId ? 'company' :
+           'all',
+      37                  'company_id'        => $companyId,
+      38                  'company_name'      => $companyId ? Company::fi
+          nd($companyId)?->name : null,
+      39 -                'hours_this_month'  => (float) (clone $thisMont
+         -hQuery)->sum('hours'),                                         
+      39 +                'hours_this_month'  => (int) (clone $thisMonthQ
+         +uery)->sum('hours'),                                           
+      40                  'entries_this_month' => (clone $thisMonthQuery)
+          ->count(),
+      41 -                'total_hours'       => (float) (clone $entriesQ
+         -uery)->sum('hours'),                                           
+      41 +                'total_hours'       => (int) (clone $entriesQue
+         +ry)->sum('hours'),                                             
+      42                  'total_entries'     => (clone $entriesQuery)->c
+          ount(),
+      43                  'companies_count'   => $companyId ? 1 : Company
+          ::count(),
+      44                  'employees_count'   => $companyId
+
+⏺ Update(app/Http/Requests/StoreTimeEntriesRequest.php)
+  ⎿  Added 1 line, removed 1 line
+      29              'entries.*.project_id'  => ['required', 'integer', 
+          'exists:projects,id'],
+      30              'entries.*.task_id'     => ['required', 'integer', 
+          'exists:tasks,id'],
+      31              'entries.*.date'        => ['required', 'date_forma
+          t:Y-m-d'],
+      32 -            'entries.*.hours'       => ['required', 'numeric', 
+         -'min:0.01', 'max:24'],                                         
+      32 +            'entries.*.hours'       => ['required', 'integer', 
+         +'min:1', 'max:24'],                                            
+      33          ];
+      34      }
+      35  
+
+⏺ Update(app/Http/Requests/StoreTimeEntriesRequest.php)
+  ⎿  Added 2 lines, removed 2 lines
+      67              'entries.*.date.required'        => 'Date is requir
+          ed.',
+      68              'entries.*.date.date_format'     => 'Use a valid da
+          te (YYYY-MM-DD).',
+      69              'entries.*.hours.required'       => 'Hours is requi
+          red.',
+      70 -            'entries.*.hours.numeric'        => 'Hours must be 
+         -a number.',                                                    
+      71 -            'entries.*.hours.min'            => 'Hours must be 
+         -greater than 0.',                                              
+      70 +            'entries.*.hours.integer'        => 'Hours must be 
+         +a whole number.',                                              
+      71 +            'entries.*.hours.min'            => 'Hours must be 
+         +at least 1.',                                                  
+      72              'entries.*.hours.max'            => "Hours can't ex
+          ceed 24 in a single entry.",
+      73              'entries.*.company_id.exists'    => 'Pick a valid c
+          ompany.',
+      74              'entries.*.employee_id.exists'   => 'Pick a valid e
+          mployee.',
+
+⏺ Update(app/Http/Requests/UpdateTimeEntryRequest.php)
+  ⎿  Added 1 line, removed 1 line
+      27              'project_id'  => ['required', 'integer', 'exists:pr
+          ojects,id'],
+      28              'task_id'     => ['required', 'integer', 'exists:ta
+          sks,id'],
+      29              'date'        => ['required', 'date_format:Y-m-d'],
+      30 -            'hours'       => ['required', 'numeric', 'min:0.01'
+         -, 'max:24'],                                                   
+      30 +            'hours'       => ['required', 'integer', 'min:1', '
+         +max:24'],                                                      
+      31          ];
+      32      }
+      33  
+
+⏺ Update(app/Http/Requests/UpdateTimeEntryRequest.php)
+  ⎿  Added 2 lines, removed 2 lines
+      57              'date.required'         => 'Date is required.',
+      58              'date.date_format'      => 'Use a valid date (YYYY-
+          MM-DD).',
+      59              'hours.required'        => 'Hours is required.',
+      60 -            'hours.numeric'         => 'Hours must be a number.
+         -',                                                             
+      61 -            'hours.min'             => 'Hours must be greater t
+         -han 0.',                                                       
+      60 +            'hours.integer'         => 'Hours must be a whole n
+         +umber.',                                                       
+      61 +            'hours.min'             => 'Hours must be at least 
+         +1.',                                                           
+      62              'hours.max'             => "Hours can't exceed 24 i
+          n a single entry.",
+      63              'company_id.exists'     => 'Pick a valid company.',
+      64              'employee_id.exists'    => 'Pick a valid employee.'
+          ,
+
+⏺ Update(database/factories/TimeEntryFactory.php)
+  ⎿  Added 1 line, removed 1 line
+      37              'project_id'  => $project->id,
+      38              'task_id'     => $task->id,
+      39              'date'        => fake()->dateTimeBetween('-30 days'
+          , 'now')->format('Y-m-d'),
+      40 -            'hours'       => fake()->randomFloat(2, 0.5, 8),   
+      40 +            'hours'       => fake()->numberBetween(1, 8),      
+      41          ];
+      42      }
+      43  }
+
+⏺ Update(database/seeders/DatabaseSeeder.php)
+  ⎿  Added 2 lines, removed 3 lines
+       96          }
+       97      }
+       98  
+       99 -    private function randomHours(): float                     
+       99 +    private function randomHours(): int                       
+      100      {
+      101 -        // Quarters between 1.0 and 6.0 hours.                
+      102 -        return round(random_int(4, 24) / 4, 2);               
+      101 +        return random_int(1, 6);                              
+      102      }
+      103  }
+
+⏺ Now the test that uses fractional hours:
+
+⏺ Update(tests/Feature/TimeEntryUpdateDeleteTest.php)
+  ⎿  Added 3 lines, removed 3 lines
+      49              'project_id'  => $entry->project_id,
+      50              'task_id'     => $entry->task_id,
+      51              'date'        => '2026-02-10',
+      52 -            'hours'       => 6.5,                              
+      52 +            'hours'       => 7,                                
+      53          ];
+      54  
+      55          $this->putJson("/api/time-entries/{$entry->id}", $paylo
+          ad)
+      56              ->assertOk()
+      57 -            ->assertJsonPath('data.hours', 6.5);               
+      57 +            ->assertJsonPath('data.hours', 7);                 
+      58  
+      59 -        $this->assertSame('6.50', (string) $entry->fresh()->hou
+         -rs);                                                           
+      59 +        $this->assertSame(7, $entry->fresh()->hours);          
+      60      }
+      61  
+      62      public function test_update_does_not_conflict_with_itself()
+          : void
+
+  Searched for 1 pattern (ctrl+o to expand)
+  ⎿  You've hit your limit · resets 4:10am (America/Sao_Paulo)
+     /upgrade or /extra-usage to finish what you’re working on.
+
+✻ Cogitated for 1m 53s
+
+❯ finish this please                                                            
+
+  Searched for 1 pattern, read 2 files (ctrl+o to expand)
+
+⏺ Update(resources/js/components/HistoryTab.vue)
+  ⎿  Added 1 line, removed 1 line
+      179              <td class="px-3 py-2.5 text-ink truncate" :title="
+           entry.employee.name">{{ entry.employee.name }}</td>
+      180              <td class="px-3 py-2.5 text-ink truncate" :title="
+           entry.project.name">{{ entry.project.name }}</td>
+      181              <td class="px-3 py-2.5 text-ink truncate" :title="
+           entry.task.name">{{ entry.task.name }}</td>
+      182 -            <td class="px-3 py-2.5 text-right tabular-nums tex
+          -t-ink">{{ Math.round(Number(entry.hours)) }}</td>             
+      182 +            <td class="px-3 py-2.5 text-right tabular-nums tex
+          +t-ink">{{ entry.hours }}</td>                                 
+      183              <td class="px-3 py-2.5 text-right">
+      184                <button
+      185                  type="button"
+
+⏺ Update(resources/js/components/EditEntryModal.vue)
+  ⎿  File must be read first
+
+  Read 1 file (ctrl+o to expand)
+⏺ Update(resources/js/components/EditEntryModal.vue)
+  ⎿  Added 1 line, removed 1 line
+      29    employee_id: props.entry.employee.id,
+      30    project_id: props.entry.project.id,
+      31    task_id: props.entry.task.id,
+      32 -  hours: Math.round(Number(props.entry.hours)),                
+      32 +  hours: props.entry.hours,                                    
+      33  });
+      34  
+      35  const projects = ref([]);
+
+⏺ Now let me also bump the input min attributes from 0 to 1 so the form-level
+  constraint matches the new server validation.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 1 line, removed 1 line
+      274              <input
+      275                  type="number"
+      276                  step="1"
+      277 -                min="0"                                       
+      277 +                min="1"                                       
+      278                  max="24"
+      279                  inputmode="numeric"
+      280                  :class="[fieldClass('hours'), 'pr-2']"
+
+  Searched for 1 pattern, read 1 file (ctrl+o to expand)
+
+⏺ Update(resources/js/components/EditEntryModal.vue)
+  ⎿  Added 1 line, removed 1 line
+      256            <input
+      257              type="number"
+      258              step="1"
+      259 -            min="0"                                           
+      259 +            min="1"                                           
+      260              max="24"
+      261              inputmode="numeric"
+      262              :class="[fieldClass('hours'), 'text-right']"
+
+  Searched for 2 patterns, read 1 file (ctrl+o to expand)
+
+⏺ Let me run the tests to verify everything still works.
+
+⏺ Bash(php artisan test --filter=TimeEntry 2>&1 | tail -40)
+  ⎿  {
+       "tool": "phpunit",
+       "result": "passed",
+     … +5 lines (ctrl+o to expand)
+
+⏺ All 19 TimeEntry tests pass. Summary of changes:
+
+  - Migration (2026_05_02_163133_create_time_entries_table.php):
+  decimal('hours', 5, 2) → unsignedTinyInteger('hours')
+  - Model (TimeEntry.php): cast decimal:2 → integer
+  - Validation (StoreTimeEntriesRequest, UpdateTimeEntryRequest): numeric, 
+  min:0.01 → integer, min:1; messages updated accordingly
+  - Resource (TimeEntryResource.php): (float) → (int)
+  - Summary (SummaryController.php): (float) sums → (int)
+  - Factory & seeder: now produce integer hours
+  - Frontend cleanup: removed defensive Math.round/Number casts in
+  HistoryTab.vue and EditEntryModal.vue since the API now guarantees integers;
+  bumped input min="0" → min="1" in EntryRow.vue and EditEntryModal.vue to match
+   server validation
+  - Test (TimeEntryUpdateDeleteTest.php): updated the one assertion that used
+  6.5
+
+  Run php artisan migrate:fresh --seed to reset the DB with the new column type
+  and integer-only seed data.
+
+✻ Sautéed for 1m 16s

@@ -1,0 +1,1691 @@
+╭─── Claude Code v2.1.123 ─────────────────────────────────────────────────────╮
+│                                                    │ Tips for getting        │
+│                Welcome back Gustavo!               │ started                 │
+│                                                    │ Run /init to create a … │
+│                       ▐▛███▜▌                      │ ─────────────────────── │
+│                      ▝▜█████▛▘                     │ What's new              │
+│                        ▘▘ ▝▝                       │ The `/model` picker no… │
+│  Opus 4.7 · Claude Pro · gu.follador@gmail.com's   │ - Added `claude projec… │
+│  Organization                                      │ `--dangerously-skip-pe… │
+│              ~/workplace/extras/mason              │ /release-notes for more │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+❯ /clear                                                                        
+  ⎿  (no content)
+
+❯ dont like this view of italic and pastel -- like claude website -- thats      
+  looking right now, just do something simple, focused on simplicity -- some    
+  notion look                                                                   
+                                                                                
+  use /frontend-design for that.                                                
+                                                                                
+  just change the ui, not funcionality right now                                
+
+⏺ Skill(frontend-design:frontend-design)
+  ⎿  Successfully loaded skill
+
+  Read 10 files, listed 4 directories (ctrl+o to expand)
+
+⏺ I have the picture. The current UI is "editorial newsprint" — paper
+  background, rust accent, italic Instrument Serif headlines, "Vol. I · Issue
+  01" — and you want to swap it for a clean, content-first Notion aesthetic.
+  I'll keep all logic and component shapes intact and only touch styling: theme
+  tokens, fonts, header, summary stats, tabs underline, modal, and table chrome.
+
+  Direction: white canvas, warm near-black text (#37352f — Notion's actual ink),
+   hairline #e9e9e7 borders, minimal blue (#2383e2) reserved for focus, slightly
+   rounded corners (6px), Geist throughout (drop Instrument Serif). No italics,
+  no paper grain, no editorial flourishes.
+
+  Let me make the changes.
+
+⏺ Write(resources/css/app.css)
+  ⎿  Added 61 lines, removed 48 lines
+       7  @source '../**/*.vue';
+       8  
+       9  @theme {
+      10 -    /* Editorial precision: warm paper, deep ink, single rust a
+         -ccent. */                                                      
+      11 -    --color-paper: #f6f2eb;                                    
+      12 -    --color-paper-soft: #faf7f1;                               
+      13 -    --color-paper-line: #e6dfd1;                               
+      14 -    --color-paper-line-strong: #d4c9b3;                        
+      10 +    /* Notion-inspired: white canvas, warm near-black ink, hair
+         +line borders. */                                               
+      11 +    --color-paper: #ffffff;                                    
+      12 +    --color-paper-soft: #ffffff;                               
+      13 +    --color-paper-line: #ebebea;                               
+      14 +    --color-paper-line-strong: #d3d2cf;                        
+      15 +    --color-paper-tint: #f7f6f3;                               
+      16 +    --color-paper-hover: #f1f1ef;                              
+      17  
+      16 -    --color-ink: #1c1a17;                                      
+      17 -    --color-ink-soft: #4b463f;                                 
+      18 -    --color-ink-mute: #7a7268;                                 
+      18 +    --color-ink: #37352f;                                      
+      19 +    --color-ink-soft: #6f6e69;                                 
+      20 +    --color-ink-mute: #9b9a97;                                 
+      21  
+      20 -    --color-accent: #b8512b;                                   
+      21 -    --color-accent-soft: #c97a55;                              
+      22 -    --color-accent-bg: #f3dfd2;                                
+      22 +    --color-accent: #2383e2;                                   
+      23 +    --color-accent-soft: #5fa3e8;                              
+      24 +    --color-accent-bg: #e7f3fc;                                
+      25  
+      24 -    --color-danger: #a23b1f;                                   
+      25 -    --color-danger-bg: #f6e0d8;                                
+      26 -    --color-success: #3d6a4a;                                  
+      27 -    --color-success-bg: #e3eddc;                               
+      26 +    --color-danger: #d44c47;                                   
+      27 +    --color-danger-bg: #fbecec;                                
+      28 +    --color-success: #448361;                                  
+      29 +    --color-success-bg: #ddedea;                               
+      30  
+      29 -    --font-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+      30 -    --font-display: 'Instrument Serif', ui-serif, Georgia, seri
+         -f;                                                             
+      31 +    --font-sans: 'Geist', ui-sans-serif, -apple-system, BlinkMa
+         +cSystemFont, system-ui, sans-serif;                            
+      32 +    --font-display: 'Geist', ui-sans-serif, -apple-system, Blin
+         +kMacSystemFont, system-ui, sans-serif;                         
+      33      --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, 
+          monospace;
+      34  
+      33 -    --tracking-display: -0.01em;                               
+      34 -    --tracking-uppercase: 0.18em;                              
+      35 +    --tracking-display: -0.022em;                              
+      36 +    --tracking-tight: -0.011em;                                
+      37 +    --tracking-uppercase: 0.04em;                              
+      38  }
+      39  
+      37 -/* Slightly tighter font features in tabular contexts. */      
+      40  .tabular-mono {
+      41      font-family: var(--font-mono);
+      42      font-variant-numeric: tabular-nums;
+      41 -    font-feature-settings: 'tnum' 1, 'ss01' 1;                 
+      43 +    font-feature-settings: 'tnum' 1;                           
+      44  }
+      45  
+      44 -/* A subtle paper-grain background, achieved with a faint repea
+         -ting noise. */                                                 
+      46  body {
+      46 -    background-image:                                          
+      47 -        radial-gradient(at 0% 0%, rgba(184, 81, 43, 0.03) 0px, 
+         -transparent 50%),                                              
+      48 -        radial-gradient(at 100% 100%, rgba(28, 26, 23, 0.025) 0
+         -px, transparent 50%);                                          
+      49 -    background-attachment: fixed;                              
+      47 +    background-color: var(--color-paper);                      
+      48 +    color: var(--color-ink);                                   
+      49      font-feature-settings: 'ss01' 1, 'cv11' 1;
+      50 +    -webkit-font-smoothing: antialiased;                       
+      51 +    -moz-osx-font-smoothing: grayscale;                        
+      52  }
+      53  
+      53 -/* Numerals in the headline stats animate up gently on first pa
+         -int. */                                                        
+      54  @keyframes rise {
+      55      from {
+      56          opacity: 0;
+      57 -        transform: translateY(0.4rem);                         
+      57 +        transform: translateY(0.25rem);                        
+      58      }
+      59      to {
+      60          opacity: 1;
+     ...
+       63  }
+       64  
+       65  .rise {
+       66 -    animation: rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both; 
+       66 +    animation: rise 0.35s ease-out both;                      
+       67  }
+       68  
+       69 -/* Tab underline glide. */                                    
+       69  .tab-underline {
+       70      position: absolute;
+       71      bottom: -1px;
+       72      height: 2px;
+       74 -    background: var(--color-accent);                          
+       75 -    transition: transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1),
+       76 -        width 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);            
+       73 +    background: var(--color-ink);                             
+       74 +    transition: transform 0.2s ease, width 0.2s ease;         
+       75  }
+       76  
+       79 -/* Modal entrance. */                                         
+       77  @keyframes modal-fade {
+       78      from { opacity: 0; }
+       79      to { opacity: 1; }
+       80  }
+       81  @keyframes modal-rise {
+       85 -    from { opacity: 0; transform: translateY(0.75rem) scale(0.
+          -99); }                                                        
+       82 +    from { opacity: 0; transform: translateY(0.5rem) scale(0.9
+          +9); }                                                         
+       83      to { opacity: 1; transform: translateY(0) scale(1); }
+       84  }
+       85  
+       86  .modal-overlay {
+       90 -    animation: modal-fade 0.2s ease-out both;                 
+       87 +    animation: modal-fade 0.15s ease-out both;                
+       88  }
+       89  
+       90  .modal-panel {
+       94 -    animation: modal-rise 0.3s cubic-bezier(0.2, 0.7, 0.2, 1) 
+          -both;                                                         
+       91 +    animation: modal-rise 0.2s ease-out both;                 
+       92  }
+       93  
+       97 -/* Field focus ring on the editorial inputs — quiet and warm. 
+          -*/                                                            
+       94 +/* Inputs — Notion-style: hairline borders, soft rounded corne
+          +rs, gentle focus. */                                          
+       95  .field {
+       99 -    @apply w-full rounded-none border-0 border-b border-paper-
+          -line-strong bg-transparent px-0 py-1.5 text-sm text-ink transi
+          -tion-colors;                                                  
+       96 +    @apply w-full rounded-md border border-paper-line bg-paper
+          + px-2.5 py-1.5 text-sm text-ink transition-colors;            
+       97  }
+       98 +.field:hover {                                                
+       99 +    @apply border-paper-line-strong;                          
+      100 +}                                                             
+      101  .field:focus {
+      102      @apply outline-none border-accent;
+      103 +    box-shadow: 0 0 0 3px rgba(35, 131, 226, 0.18);           
+      104  }
+      105  .field-error {
+      106      @apply border-danger;
+      107  }
+      108  .field-error:focus {
+      109      @apply border-danger;
+      110 +    box-shadow: 0 0 0 3px rgba(212, 76, 71, 0.18);            
+      111  }
+      112  
+      111 -/* Cell field — same pattern but a hair tighter for the table.
+          - */                                                           
+      113 +/* Inline cell field — borderless, reveals border on hover/foc
+          +us. */                                                        
+      114  .cell-field {
+      113 -    @apply w-full rounded-none border-0 border-b border-paper-
+          -line-strong bg-transparent px-1 py-1 text-sm text-ink transiti
+          -on-colors focus:outline-none focus:border-accent;             
+      115 +    @apply w-full rounded-md border border-transparent bg-tran
+          +sparent px-2 py-1 text-sm text-ink transition-colors;         
+      116  }
+      117 +.cell-field:hover {                                           
+      118 +    @apply bg-paper-tint;                                     
+      119 +}                                                             
+      120 +.cell-field:focus {                                           
+      121 +    @apply outline-none border-accent bg-paper;               
+      122 +    box-shadow: 0 0 0 3px rgba(35, 131, 226, 0.18);           
+      123 +}                                                             
+      124  .cell-field-error {
+      116 -    @apply border-danger focus:border-danger;                 
+      125 +    @apply border-danger;                                     
+      126  }
+      127 +.cell-field-error:focus {                                     
+      128 +    @apply border-danger;                                     
+      129 +    box-shadow: 0 0 0 3px rgba(212, 76, 71, 0.18);            
+      130 +}                                                             
+      131  
+      119 -/* Buttons — rectangular, sharp, no rounded SaaS corners. */  
+      132 +/* Buttons — Notion's clean rounded rectangles. */            
+      133  .btn {
+      121 -    @apply inline-flex items-center gap-1.5 px-4 py-2 text-sm 
+          -font-medium tracking-tight transition-all border;             
+      134 +    @apply inline-flex items-center gap-1.5 rounded-md border 
+          +px-3 py-1.5 text-sm font-medium transition-colors;            
+      135  }
+      136  .btn-primary {
+      124 -    @apply bg-ink text-paper-soft border-ink hover:bg-accent h
+          -over:border-accent;                                           
+      137 +    @apply border-ink bg-ink text-paper hover:bg-ink-soft hove
+          +r:border-ink-soft;                                            
+      138  }
+      139  .btn-primary:disabled {
+      140      @apply opacity-50 cursor-not-allowed hover:bg-ink hover:bo
+           rder-ink;
+      141  }
+      142  .btn-secondary {
+      130 -    @apply bg-transparent text-ink border-paper-line-strong ho
+          -ver:border-ink;                                               
+      143 +    @apply border-paper-line bg-paper text-ink hover:bg-paper-
+          +tint;                                                         
+      144  }
+      145  .btn-ghost {
+      133 -    @apply bg-transparent text-ink-soft border-transparent hov
+          -er:text-ink;                                                  
+      146 +    @apply border-transparent bg-transparent text-ink-soft hov
+          +er:bg-paper-tint hover:text-ink;                              
+      147  }
+      148  .btn-danger {
+      136 -    @apply bg-transparent text-danger border-transparent hover
+          -:bg-danger-bg;                                                
+      149 +    @apply border-transparent bg-transparent text-danger hover
+          +:bg-danger-bg;                                                
+      150  }
+
+⏺ Update(resources/views/app.blade.php)
+  ⎿  Added 1 line, removed 1 line
+       8      <link rel="preconnect" href="https://fonts.googleapis.com">
+       9      <link rel="preconnect" href="https://fonts.gstatic.com" cro
+          ssorigin>
+      10      <link
+      11 -        href="https://fonts.googleapis.com/css2?family=Instrume
+         -nt+Serif:ital@0;1&family=Geist:wght@300;400;500;600&family=Geis
+         -t+Mono:wght@400;500&display=swap"                              
+      11 +        href="https://fonts.googleapis.com/css2?family=Geist:wg
+         +ht@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=s
+         +wap"                                                           
+      12          rel="stylesheet"
+      13      >
+      14      @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+⏺ Update(resources/views/app.blade.php)
+  ⎿  Added 1 line, removed 1 line
+      13      >
+      14      @vite(['resources/css/app.css', 'resources/js/app.js'])
+      15  </head>
+      16 -<body class="bg-paper text-ink antialiased">                   
+      16 +<body class="bg-paper text-ink">                               
+      17      <div id="app"></div>
+      18  </body>
+      19  </html>
+
+⏺ Now App.vue — strip the editorial header.
+
+⏺ Update(resources/js/App.vue)
+  ⎿  Added 7 lines, removed 23 lines
+      26  
+      27  <template>
+      28    <div class="min-h-screen">
+      29 -    <div class="mx-auto max-w-6xl px-6 py-12 sm:py-16 space-y-1
+         -0">                                                            
+      30 -      <!-- Editorial header -->                                
+      31 -      <header class="flex items-end justify-between gap-6 borde
+         -r-b border-paper-line pb-6">                                   
+      29 +    <div class="mx-auto max-w-5xl px-6 py-10 sm:py-14 space-y-8
+         +">                                                             
+      30 +      <header class="flex items-start justify-between gap-6">  
+      31          <div>
+      33 -          <p                                                   
+      34 -            class="font-mono text-[11px] uppercase tracking-[va
+         -r(--tracking-uppercase)] text-ink-mute"                        
+      35 -          >                                                    
+      36 -            Vol. I · Issue 01                                  
+      37 -          </p>                                                 
+      32            <h1
+      39 -            class="mt-2 font-display text-5xl leading-none trac
+         -king-[var(--tracking-display)] text-ink sm:text-6xl"           
+      33 +            class="text-[2rem] font-semibold leading-tight trac
+         +king-[var(--tracking-display)] text-ink sm:text-[2.25rem]"     
+      34            >
+      41 -            The <span class="italic text-accent">Time</span> Le
+         -dger                                                           
+      35 +            Time Entries                                       
+      36            </h1>
+      43 -          <p class="mt-3 max-w-md text-sm text-ink-soft">      
+      44 -            A record of hours worked, by company, employee, pro
+         -ject, and task.                                                
+      37 +          <p class="mt-1.5 text-sm text-ink-soft">             
+      38 +            Hours worked, by company, employee, project, and ta
+         +sk.                                                            
+      39            </p>
+      40          </div>
+      47 -        <div class="hidden text-right sm:block">               
+      48 -          <p                                                   
+      49 -            class="font-mono text-[11px] uppercase tracking-[va
+         -r(--tracking-uppercase)] text-ink-mute"                        
+      50 -          >                                                    
+      51 -            Today                                              
+      52 -          </p>                                                 
+      53 -          <p class="mt-2 font-mono text-sm text-ink">{{ today }
+         -}</p>                                                          
+      54 -        </div>                                                 
+      41 +        <p class="hidden text-sm text-ink-mute tabular-mono sm:
+         +block">{{ today }}</p>                                         
+      42        </header>
+      43  
+      57 -      <!-- Summary card with embedded company filter -->       
+      44        <SummaryCard ref="summaryRef" v-model="selectedCompanyId"
+           />
+      45  
+      60 -      <!-- Tabs -->                                            
+      46        <Tabs v-model="activeTab" :tabs="tabs" />
+      47  
+      63 -      <!-- Content -->                                         
+      48        <NewEntriesTab v-if="activeTab === 'new'" />
+      49        <HistoryTab v-else />
+      50      </div>
+
+⏺ Now SummaryCard — clean stats without italic display, simpler filter.
+
+⏺ Update(resources/js/components/SummaryCard.vue)
+  ⎿  Added 21 lines, removed 37 lines
+       79  </script>
+       80  
+       81  <template>
+       82 -  <section                                                    
+       83 -    class="relative border border-paper-line-strong bg-paper-s
+          -oft px-6 py-6 sm:px-8 sm:py-7"                                
+       84 -  >                                                           
+       85 -    <!-- A small editorial mark in the top corner. -->        
+       86 -    <span                                                     
+       87 -      aria-hidden="true"                                      
+       88 -      class="absolute -top-2.5 left-6 bg-paper-soft px-2 font-
+          -mono text-[10px] uppercase tracking-[var(--tracking-uppercase)
+          -] text-ink-mute"                                              
+       89 -    >                                                         
+       90 -      summary · n°{{ summary?.scope === 'company' ? '02' : '01
+          -' }}                                                          
+       91 -    </span>                                                   
+       92 -                                                              
+       93 -    <div class="flex flex-wrap items-end justify-between gap-4
+          - border-b border-paper-line pb-5">                            
+       94 -      <div>                                                   
+       95 -        <p class="font-mono text-[10px] uppercase tracking-[va
+          -r(--tracking-uppercase)] text-ink-mute">                      
+       96 -          Filter                                              
+       97 -        </p>                                                  
+       98 -        <div class="mt-1 flex items-baseline gap-2">          
+       99 -          <span class="font-display text-3xl italic leading-no
+          -ne tracking-[var(--tracking-display)] text-ink">              
+      100 -            {{ scopeLabel }}                                  
+      101 -          </span>                                             
+      102 -          <span class="font-mono text-xs text-ink-mute">/</spa
+          -n>                                                            
+       82 +  <section class="rounded-lg border border-paper-line bg-paper
+          + px-5 py-5 sm:px-6 sm:py-6">                                  
+       83 +    <div class="flex flex-wrap items-center justify-between ga
+          +p-3 border-b border-paper-line pb-4">                         
+       84 +      <div class="flex items-center gap-2">                   
+       85 +        <span class="text-xs text-ink-mute">Showing</span>    
+       86 +        <div class="relative">                                
+       87            <select
+       88              :value="selectValue"
+      105 -            class="cursor-pointer appearance-none border-0 bor
+          -der-b border-dashed border-ink-mute bg-transparent pb-0.5 pr-5
+          - text-sm text-ink-soft focus:border-accent focus:outline-none 
+          -focus:text-ink"                                               
+       89 +            class="cursor-pointer appearance-none rounded-md b
+          +order border-paper-line bg-paper py-1 pl-2.5 pr-7 text-sm font
+          +-medium text-ink transition-colors hover:bg-paper-tint focus:b
+          +order-accent focus:outline-none"                              
+       90              @change="onSelect"
+       91            >
+       92              <option value="">All companies</option>
+       93              <option v-for="c in companies" :key="c.id" :value=
+           "c.id">{{ c.name }}</option>
+       94            </select>
+       95 +          <svg                                                
+       96 +            aria-hidden="true"                                
+       97 +            class="pointer-events-none absolute right-2 top-1/
+          +2 -translate-y-1/2 text-ink-mute"                             
+       98 +            width="10" height="10" viewBox="0 0 12 12" fill="n
+          +one"                                                          
+       99 +          >                                                   
+      100 +            <path d="M2.5 4.5L6 8l3.5-3.5" stroke="currentColo
+          +r" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="
+          +round"/>                                                      
+      101 +          </svg>                                              
+      102          </div>
+      103        </div>
+      104  
+      114 -      <div                                                    
+      115 -        v-if="loading"                                        
+      116 -        class="font-mono text-[11px] uppercase tracking-[var(-
+          --tracking-uppercase)] text-ink-mute"                          
+      117 -      >                                                       
+      118 -        loading…                                              
+      119 -      </div>                                                  
+      105 +      <div v-if="loading" class="text-xs text-ink-mute">Loadin
+          +g…</div>                                                      
+      106      </div>
+      107  
+      122 -    <div class="mt-5 grid grid-cols-2 gap-x-8 gap-y-6 sm:grid-
+          -cols-4">                                                      
+      108 +    <div class="mt-5 grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-
+          +cols-4">                                                      
+      109        <div
+      110          v-for="(stat, i) in stats"
+      111          :key="stat.key"
+      112          class="rise"
+      127 -        :style="{ 'animation-delay': `${i * 80}ms` }"         
+      113 +        :style="{ 'animation-delay': `${i * 50}ms` }"         
+      114        >
+      129 -        <p class="font-mono text-[10px] uppercase tracking-[va
+          -r(--tracking-uppercase)] text-ink-mute">                      
+      130 -          {{ stat.label }}                                    
+      131 -        </p>                                                  
+      132 -        <p class="mt-2 flex items-baseline gap-1">            
+      133 -          <span class="font-display text-4xl italic leading-no
+          -ne tracking-[var(--tracking-display)] text-ink">              
+      115 +        <p class="text-xs text-ink-mute">{{ stat.label }}</p> 
+      116 +        <p class="mt-1 flex items-baseline gap-1">            
+      117 +          <span class="text-2xl font-semibold leading-none tra
+          +cking-[var(--tracking-tight)] text-ink tabular-nums">         
+      118              {{ stat.value }}
+      119            </span>
+      136 -          <span v-if="stat.unit" class="font-mono text-xs text
+          --ink-mute">{{ stat.unit }}</span>                             
+      120 +          <span v-if="stat.unit" class="text-xs text-ink-mute"
+          +>{{ stat.unit }}</span>                                       
+      121          </p>
+      138 -        <p class="mt-2 text-xs text-ink-soft">{{ stat.sub }}</
+          -p>                                                            
+      122 +        <p class="mt-1.5 text-xs text-ink-soft">{{ stat.sub }}
+          +</p>                                                          
+      123        </div>
+      124      </div>
+      125    </section>
+
+⏺ Now Tabs — Notion-style: less uppercase, no mono, just clean text with a dark
+  underline.
+
+⏺ Update(resources/js/components/Tabs.vue)
+  ⎿  Added 3 lines, removed 3 lines
+      35  <template>
+      36    <nav
+      37      ref="navRef"
+      38 -    class="relative flex items-end justify-between border-b bor
+         -der-paper-line"                                                
+      38 +    class="relative flex items-end border-b border-paper-line" 
+      39    >
+      40      <div class="flex">
+      41        <button
+     ...
+      44          type="button"
+      45          :data-tab="tab.id"
+      46          :class="[
+      47 -          'relative px-6 py-3 font-mono text-[12px] uppercase t
+         -racking-[var(--tracking-uppercase)] transition-colors',        
+      48 -          modelValue === tab.id ? 'text-ink' : 'text-ink-mute h
+         -over:text-ink-soft',                                           
+      47 +          'relative px-3 py-2.5 text-sm font-medium transition-
+         +colors',                                                       
+      48 +          modelValue === tab.id ? 'text-ink' : 'text-ink-soft h
+         +over:text-ink',                                                
+      49          ]"
+      50          @click="emit('update:modelValue', tab.id)"
+      51        >
+
+⏺ Now NewEntriesTab — clean total, simpler kbd row, table chrome.
+
+⏺ Update(resources/js/components/NewEntriesTab.vue)
+  ⎿  Added 16 lines, removed 14 lines
+      115  </script>
+      116  
+      117  <template>
+      118 -  <section class="space-y-5" @keydown="onKeydown">            
+      118 +  <section class="space-y-4" @keydown="onKeydown">            
+      119      <div
+      120        v-if="flash"
+      121        :class="[
+      122 -        'border px-4 py-2.5 text-sm font-mono tracking-tight',
+      122 +        'rounded-md border px-3.5 py-2 text-sm',              
+      123          flash.type === 'success'
+      124            ? 'border-success bg-success-bg text-success'
+      125            : 'border-danger bg-danger-bg text-danger',
+     ...
+      129        {{ flash.message }}
+      130      </div>
+      131  
+      132 -    <div class="overflow-x-auto border border-paper-line-stron
+          -g bg-paper-soft">                                             
+      132 +    <div class="overflow-x-auto rounded-lg border border-paper
+          +-line bg-paper">                                              
+      133        <table class="min-w-full text-sm">
+      134          <thead>
+      135 -          <tr class="border-b border-paper-line-strong">      
+      135 +          <tr class="border-b border-paper-line bg-paper-tint/
+          +60">                                                          
+      136              <th
+      137                v-for="header in ['Company', 'Date', 'Employee',
+            'Project', 'Task', 'Hours', '']"
+      138                :key="header"
+      139 -              class="px-3 py-3 text-left font-mono text-[10px]
+          - font-medium uppercase tracking-[var(--tracking-uppercase)] te
+          -xt-ink-mute"                                                  
+      139 +              class="px-3 py-2.5 text-left text-xs font-medium
+          + text-ink-soft"                                               
+      140                :class="header === 'Hours' ? 'text-right' : ''"
+      141              >
+      142                {{ header }}
+     ...
+      164          <button type="button" class="btn btn-secondary" @click
+           ="addRow">
+      165            <span aria-hidden="true">+</span> Add row
+      166          </button>
+      167 -        <p class="font-mono text-[11px] uppercase tracking-[va
+          -r(--tracking-uppercase)] text-ink-mute">                      
+      168 -          <kbd class="border border-paper-line-strong px-1 py-
+          -0.5 text-[10px]">⌘N</kbd> new ·                               
+      169 -          <kbd class="border border-paper-line-strong px-1 py-
+          -0.5 text-[10px]">⌘D</kbd> duplicate ·                         
+      170 -          <kbd class="border border-paper-line-strong px-1 py-
+          -0.5 text-[10px]">⌘↵</kbd> submit                              
+      167 +        <p class="text-xs text-ink-mute">                     
+      168 +          <kbd class="rounded border border-paper-line bg-pape
+          +r-tint px-1 py-0.5 text-[10px] font-medium text-ink-soft">⌘N</
+          +kbd> new                                                      
+      169 +          <span class="mx-1">·</span>                         
+      170 +          <kbd class="rounded border border-paper-line bg-pape
+          +r-tint px-1 py-0.5 text-[10px] font-medium text-ink-soft">⌘D</
+          +kbd> duplicate                                                
+      171 +          <span class="mx-1">·</span>                         
+      172 +          <kbd class="rounded border border-paper-line bg-pape
+          +r-tint px-1 py-0.5 text-[10px] font-medium text-ink-soft">⌘↵</
+          +kbd> submit                                                   
+      173          </p>
+      174        </div>
+      175  
+      174 -      <div class="flex items-center gap-6">                   
+      176 +      <div class="flex items-center gap-5">                   
+      177          <div class="text-right">
+      176 -          <p class="font-mono text-[10px] uppercase tracking-[
+          -var(--tracking-uppercase)] text-ink-mute">                    
+      177 -            {{ rows.length }} {{ rows.length === 1 ? 'row' : '
+          -rows' }}                                                      
+      178 +          <p class="text-xs text-ink-mute">                   
+      179 +            {{ rows.length }} {{ rows.length === 1 ? 'row' : '
+          +rows' }} · Total                                              
+      180            </p>
+      179 -          <p class="font-display text-2xl italic leading-none 
+          -text-ink">                                                    
+      180 -            {{ totalHours.toFixed(2) }}<span class="ml-1 font-
+          -mono text-xs text-ink-mute">h</span>                          
+      181 +          <p class="text-xl font-semibold leading-tight text-i
+          +nk tabular-nums">                                             
+      182 +            {{ totalHours.toFixed(2) }}<span class="ml-0.5 tex
+          +t-xs font-normal text-ink-mute">h</span>                      
+      183            </p>
+      184          </div>
+      185          <button
+
+⏺ Now HistoryTab — clean filter labels, simpler empty state, refined pagination
+  chips.
+
+⏺ Update(resources/js/components/HistoryTab.vue)
+  ⎿  Added 43 lines, removed 58 lines
+       99  </script>
+      100  
+      101  <template>
+      102 -  <section class="space-y-5">                                 
+      103 -    <!-- Filter bar — quiet, hairline-only, no card. -->      
+      104 -    <div class="flex flex-wrap items-end gap-x-6 gap-y-3 borde
+          -r-b border-paper-line pb-4">                                  
+      105 -      <div class="flex-1 min-w-[220px]">                      
+      106 -        <label                                                
+      107 -          class="block font-mono text-[10px] uppercase trackin
+          -g-[var(--tracking-uppercase)] text-ink-mute"                  
+      108 -        >                                                     
+      109 -          Search                                              
+      110 -        </label>                                              
+      102 +  <section class="space-y-4">                                 
+      103 +    <div class="flex flex-wrap items-end gap-x-3 gap-y-3">    
+      104 +      <div class="flex-1 min-w-[240px]">                      
+      105 +        <label class="mb-1 block text-xs text-ink-mute">Search
+          +</label>                                                      
+      106          <input
+      107            v-model="search"
+      108            type="search"
+      114 -          placeholder="employee, project, task, or company"   
+      109 +          placeholder="Employee, project, task, or company"   
+      110            class="field"
+      111          />
+      112        </div>
+      113        <div>
+      119 -        <label                                                
+      120 -          class="block font-mono text-[10px] uppercase trackin
+          -g-[var(--tracking-uppercase)] text-ink-mute"                  
+      121 -        >                                                     
+      122 -          From                                                
+      123 -        </label>                                              
+      124 -        <input v-model="fromDate" type="date" class="field tab
+          -ular-mono" />                                                 
+      114 +        <label class="mb-1 block text-xs text-ink-mute">From</
+          +label>                                                        
+      115 +        <input v-model="fromDate" type="date" class="field tab
+          +ular-nums" />                                                 
+      116        </div>
+      117        <div>
+      127 -        <label                                                
+      128 -          class="block font-mono text-[10px] uppercase trackin
+          -g-[var(--tracking-uppercase)] text-ink-mute"                  
+      129 -        >                                                     
+      130 -          To                                                  
+      131 -        </label>                                              
+      132 -        <input v-model="toDate" type="date" class="field tabul
+          -ar-mono" />                                                   
+      118 +        <label class="mb-1 block text-xs text-ink-mute">To</la
+          +bel>                                                          
+      119 +        <input v-model="toDate" type="date" class="field tabul
+          +ar-nums" />                                                   
+      120        </div>
+      121        <button
+      122          v-if="filtersActive"
+     ...
+      128        </button>
+      129      </div>
+      130  
+      144 -    <div                                                      
+      145 -      class="flex items-center justify-between font-mono text-
+          -[11px] uppercase tracking-[var(--tracking-uppercase)] text-ink
+          --mute"                                                        
+      146 -    >                                                         
+      147 -      <span v-if="loading">loading…</span>                    
+      131 +    <div class="flex items-center justify-between text-xs text
+          +-ink-mute">                                                   
+      132 +      <span v-if="loading">Loading…</span>                    
+      133        <span v-else-if="error" class="text-danger">{{ error }}<
+           /span>
+      134        <span v-else>
+      135          {{ meta.total }} {{ meta.total === 1 ? 'entry' : 'entr
+           ies' }}
+      136          ·
+      152 -        {{ totalHoursOnPage.toFixed(2) }} h on this page      
+      137 +        {{ totalHoursOnPage.toFixed(2) }}h on this page       
+      138        </span>
+      139        <button
+      140          type="button"
+      156 -        class="hover:text-ink"                                
+      141 +        class="text-ink-soft hover:text-ink"                  
+      142          :disabled="loading"
+      143          @click="reload"
+      144        >
+      160 -        Refresh ↻                                             
+      145 +        Refresh                                               
+      146        </button>
+      147      </div>
+      148  
+      164 -    <div class="border border-paper-line-strong bg-paper-soft"
+          ->                                                             
+      149 +    <div class="overflow-hidden rounded-lg border border-paper
+          +-line bg-paper">                                              
+      150        <table class="min-w-full text-sm">
+      151          <thead>
+      167 -          <tr class="border-b border-paper-line-strong">      
+      168 -            <th class="px-3 py-3 text-left font-mono text-[10p
+          -x] font-medium uppercase tracking-[var(--tracking-uppercase)] 
+          -text-ink-mute">Date</th>                                      
+      169 -            <th class="px-3 py-3 text-left font-mono text-[10p
+          -x] font-medium uppercase tracking-[var(--tracking-uppercase)] 
+          -text-ink-mute">Company</th>                                   
+      170 -            <th class="px-3 py-3 text-left font-mono text-[10p
+          -x] font-medium uppercase tracking-[var(--tracking-uppercase)] 
+          -text-ink-mute">Employee</th>                                  
+      171 -            <th class="px-3 py-3 text-left font-mono text-[10p
+          -x] font-medium uppercase tracking-[var(--tracking-uppercase)] 
+          -text-ink-mute">Project</th>                                   
+      172 -            <th class="px-3 py-3 text-left font-mono text-[10p
+          -x] font-medium uppercase tracking-[var(--tracking-uppercase)] 
+          -text-ink-mute">Task</th>                                      
+      173 -            <th class="px-3 py-3 text-right font-mono text-[10
+          -px] font-medium uppercase tracking-[var(--tracking-uppercase)]
+          - text-ink-mute">Hours</th>                                    
+      174 -            <th class="px-3 py-3"></th>                       
+      152 +          <tr class="border-b border-paper-line bg-paper-tint/
+          +60">                                                          
+      153 +            <th class="px-3 py-2.5 text-left text-xs font-medi
+          +um text-ink-soft">Date</th>                                   
+      154 +            <th class="px-3 py-2.5 text-left text-xs font-medi
+          +um text-ink-soft">Company</th>                                
+      155 +            <th class="px-3 py-2.5 text-left text-xs font-medi
+          +um text-ink-soft">Employee</th>                               
+      156 +            <th class="px-3 py-2.5 text-left text-xs font-medi
+          +um text-ink-soft">Project</th>                                
+      157 +            <th class="px-3 py-2.5 text-left text-xs font-medi
+          +um text-ink-soft">Task</th>                                   
+      158 +            <th class="px-3 py-2.5 text-right text-xs font-med
+          +ium text-ink-soft">Hours</th>                                 
+      159 +            <th class="px-3 py-2.5"></th>                     
+      160            </tr>
+      161          </thead>
+      162          <tbody>
+      163            <tr
+      164              v-for="entry in entries"
+      165              :key="entry.id"
+      181 -            class="group border-b border-paper-line transition
+          --colors last:border-b-0 hover:bg-paper"                       
+      166 +            class="group border-b border-paper-line transition
+          +-colors last:border-b-0 hover:bg-paper-tint"                  
+      167            >
+      183 -            <td class="px-3 py-3 tabular-mono text-ink-soft">{
+          -{ formatDate(entry.date) }}</td>                              
+      184 -            <td class="px-3 py-3 text-ink">{{ entry.company.na
+          -me }}</td>                                                    
+      185 -            <td class="px-3 py-3 text-ink">{{ entry.employee.n
+          -ame }}</td>                                                   
+      186 -            <td class="px-3 py-3 text-ink">{{ entry.project.na
+          -me }}</td>                                                    
+      187 -            <td class="px-3 py-3 text-ink">{{ entry.task.name 
+          -}}</td>                                                       
+      188 -            <td class="px-3 py-3 text-right tabular-mono text-
+          -ink">{{ Number(entry.hours).toFixed(2) }}</td>                
+      189 -            <td class="px-3 py-3 text-right">                 
+      168 +            <td class="px-3 py-2.5 tabular-nums text-ink-soft"
+          +>{{ formatDate(entry.date) }}</td>                            
+      169 +            <td class="px-3 py-2.5 text-ink">{{ entry.company.
+          +name }}</td>                                                  
+      170 +            <td class="px-3 py-2.5 text-ink">{{ entry.employee
+          +.name }}</td>                                                 
+      171 +            <td class="px-3 py-2.5 text-ink">{{ entry.project.
+          +name }}</td>                                                  
+      172 +            <td class="px-3 py-2.5 text-ink">{{ entry.task.nam
+          +e }}</td>                                                     
+      173 +            <td class="px-3 py-2.5 text-right tabular-nums tex
+          +t-ink">{{ Number(entry.hours).toFixed(2) }}</td>              
+      174 +            <td class="px-3 py-2.5 text-right">               
+      175                <button
+      176                  type="button"
+      192 -                class="font-mono text-[11px] uppercase trackin
+          -g-[var(--tracking-uppercase)] text-ink-mute opacity-0 transiti
+          -on-opacity hover:text-accent group-hover:opacity-100 focus:opa
+          -city-100"                                                     
+      177 +                class="rounded-md px-2 py-1 text-xs text-ink-s
+          +oft opacity-0 transition hover:bg-paper hover:text-ink group-h
+          +over:opacity-100 focus:opacity-100"                           
+      178                  @click="editing = entry"
+      179                >
+      195 -                edit →                                        
+      180 +                Edit                                          
+      181                </button>
+      182              </td>
+      183            </tr>
+      184            <tr v-if="!loading && entries.length === 0">
+      185              <td colspan="7" class="px-6 py-16 text-center">
+      201 -              <p class="font-display text-2xl italic text-ink-
+          -mute">Nothing on the books.</p>                               
+      202 -              <p class="mt-2 font-mono text-[11px] uppercase t
+          -racking-[var(--tracking-uppercase)] text-ink-mute">           
+      203 -                no entries match these filters                
+      186 +              <p class="text-sm font-medium text-ink">No entri
+          +es yet</p>                                                    
+      187 +              <p class="mt-1 text-xs text-ink-mute">          
+      188 +                Nothing matches these filters.                
+      189                </p>
+      190              </td>
+      191            </tr>
+     ...
+      195  
+      196      <nav
+      197        v-if="meta.last_page > 1"
+      213 -      class="flex items-center justify-between border-t border
+          --paper-line pt-4 font-mono text-[11px] uppercase tracking-[var
+          -(--tracking-uppercase)] text-ink-mute"                        
+      198 +      class="flex items-center justify-between pt-2 text-xs te
+          +xt-ink-mute"                                                  
+      199      >
+      215 -      <div>page {{ meta.current_page }} of {{ meta.last_page }
+          -}</div>                                                       
+      200 +      <div>Page {{ meta.current_page }} of {{ meta.last_page }
+          +}</div>                                                       
+      201        <div class="flex items-center gap-1">
+      202          <button
+      203            type="button"
+      219 -          class="border border-paper-line-strong bg-paper-soft
+          - px-2 py-1 hover:border-ink disabled:opacity-30 disabled:hover
+          -:border-paper-line-strong"                                    
+      204 +          class="rounded-md border border-paper-line bg-paper 
+          +px-2 py-1 text-ink-soft transition-colors hover:bg-paper-tint 
+          +hover:text-ink disabled:opacity-30 disabled:hover:bg-paper"   
+      205            :disabled="meta.current_page <= 1"
+      206            @click="goToPage(meta.current_page - 1)"
+      207          >
+     ...
+      212            :key="page"
+      213            type="button"
+      214            :class="[
+      230 -            'border px-3 py-1',                               
+      215 +            'rounded-md border px-2.5 py-1 transition-colors',
+      216              page === meta.current_page
+      232 -              ? 'border-ink bg-ink text-paper-soft'           
+      233 -              : 'border-paper-line-strong bg-paper-soft text-i
+          -nk-soft hover:border-ink',                                    
+      217 +              ? 'border-ink bg-ink text-paper'                
+      218 +              : 'border-paper-line bg-paper text-ink-soft hove
+          +r:bg-paper-tint hover:text-ink',                              
+      219            ]"
+      220            @click="goToPage(page)"
+      221          >
+     ...
+      223          </button>
+      224          <button
+      225            type="button"
+      241 -          class="border border-paper-line-strong bg-paper-soft
+          - px-2 py-1 hover:border-ink disabled:opacity-30 disabled:hover
+          -:border-paper-line-strong"                                    
+      226 +          class="rounded-md border border-paper-line bg-paper 
+          +px-2 py-1 text-ink-soft transition-colors hover:bg-paper-tint 
+          +hover:text-ink disabled:opacity-30 disabled:hover:bg-paper"   
+      227            :disabled="meta.current_page >= meta.last_page"
+      228            @click="goToPage(meta.current_page + 1)"
+      229          >
+
+⏺ Now the EditEntryModal — clean header, no italic.
+
+⏺ Update(resources/js/components/EditEntryModal.vue)
+  ⎿  Added 13 lines, removed 13 lines
+      138  <template>
+      139    <div
+      140      class="modal-overlay fixed inset-0 z-40 flex items-start j
+           ustify-center overflow-y-auto px-4 py-12"
+      141 -    style="background-color: rgba(28, 26, 23, 0.55);"         
+      141 +    style="background-color: rgba(15, 15, 15, 0.45);"         
+      142      @click="onBackdropClick"
+      143      @keydown.esc="$emit('close')"
+      144    >
+      145 -    <div class="modal-panel w-full max-w-xl border border-pape
+          -r-line-strong bg-paper-soft p-7 shadow-2xl">                  
+      146 -      <div class="mb-5 flex items-start justify-between border
+          --b border-paper-line pb-4">                                   
+      145 +    <div class="modal-panel w-full max-w-xl rounded-lg border 
+          +border-paper-line bg-paper p-6 shadow-xl">                    
+      146 +      <div class="mb-5 flex items-start justify-between">     
+      147          <div>
+      148 -          <p class="font-mono text-[10px] uppercase tracking-[
+          -var(--tracking-uppercase)] text-ink-mute">                    
+      149 -            Editing entry n°{{ entry.id }}                    
+      150 -          </p>                                                
+      151 -          <h2 class="mt-1 font-display text-3xl italic leading
+          --none tracking-[var(--tracking-display)] text-ink">           
+      152 -            Amend the record                                  
+      148 +          <p class="text-xs text-ink-mute">Entry #{{ entry.id 
+          +}}</p>                                                        
+      149 +          <h2 class="mt-0.5 text-xl font-semibold leading-tigh
+          +t tracking-[var(--tracking-tight)] text-ink">                 
+      150 +            Edit entry                                        
+      151            </h2>
+      152          </div>
+      153          <button
+      154            type="button"
+      157 -          class="text-ink-mute hover:text-ink"                
+      155 +          class="rounded-md p-1 text-ink-mute transition-color
+          +s hover:bg-paper-tint hover:text-ink"                         
+      156            aria-label="Close"
+      157            @click="$emit('close')"
+      158          >
+      161 -          ✕                                                   
+      159 +          <svg width="16" height="16" viewBox="0 0 16 16" fill
+          +="none">                                                      
+      160 +            <path d="M3.5 3.5L12.5 12.5M12.5 3.5L3.5 12.5" str
+          +oke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      161 +          </svg>                                              
+      162          </button>
+      163        </div>
+      164  
+      165        <div
+      166          v-if="flash"
+      167          :class="[
+      168 -          'mb-4 border px-3 py-2 text-sm',                    
+      168 +          'mb-4 rounded-md border px-3 py-2 text-sm',         
+      169            flash.type === 'error' ? 'border-danger bg-danger-bg
+            text-danger' : 'border-success bg-success-bg text-success',
+      170          ]"
+      171        >
+      172          {{ flash.message }}
+      173        </div>
+      174  
+      175 -      <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-col
+          -s-2">                                                         
+      175 +      <div class="grid grid-cols-1 gap-x-4 gap-y-3.5 sm:grid-c
+          +ols-2">                                                       
+      176          <div>
+      177 -          <label class="block font-mono text-[10px] uppercase 
+          -tracking-[var(--tracking-uppercase)] text-ink-mute">          
+      177 +          <label class="mb-1 block text-xs text-ink-mute">    
+      178              Company
+      179            </label>
+      180            <select
+
+⏺ Update(resources/js/components/EditEntryModal.vue)
+  ⎿  Added 1 line, removed 1 line
+      189          </div>
+      190  
+      191          <div>
+      192 -          <label class="block font-mono text-[10px] uppercase 
+          -tracking-[var(--tracking-uppercase)] text-ink-mute">          
+      192 +          <label class="mb-1 block text-xs text-ink-mute">    
+      193              Date
+      194            </label>
+      195            <input
+
+⏺ Update(resources/js/components/EditEntryModal.vue)
+  ⎿  Added 1 line, removed 1 line
+      202          </div>
+      203  
+      204          <div>
+      205 -          <label class="block font-mono text-[10px] uppercase 
+          -tracking-[var(--tracking-uppercase)] text-ink-mute">          
+      205 +          <label class="mb-1 block text-xs text-ink-mute">    
+      206              Employee
+      207            </label>
+      208            <select
+⏺ Update(resources/js/components/EditEntryModal.vue)
+  ⎿  Added 1 line, removed 1 line
+      218          </div>
+      219  
+      220          <div>
+      221 -          <label class="block font-mono text-[10px] uppercase 
+          -tracking-[var(--tracking-uppercase)] text-ink-mute">          
+      221 +          <label class="mb-1 block text-xs text-ink-mute">    
+      222              Project
+      223            </label>
+      224            <select
+
+⏺ Update(resources/js/components/EditEntryModal.vue)
+  ⎿  Added 1 line, removed 1 line
+      234          </div>
+      235  
+      236          <div>
+      237 -          <label class="block font-mono text-[10px] uppercase 
+          -tracking-[var(--tracking-uppercase)] text-ink-mute">          
+      237 +          <label class="mb-1 block text-xs text-ink-mute">    
+      238              Task
+      239            </label>
+      240            <select
+
+⏺ Update(resources/js/components/EditEntryModal.vue)
+  ⎿  Added 1 line, removed 1 line
+      250          </div>
+      251  
+      252          <div>
+      253 -          <label class="block font-mono text-[10px] uppercase 
+          -tracking-[var(--tracking-uppercase)] text-ink-mute">          
+      253 +          <label class="mb-1 block text-xs text-ink-mute">    
+      254              Hours
+      255            </label>
+      256            <input
+
+⏺ Update(resources/js/components/EditEntryModal.vue)
+  ⎿  Added 1 line, removed 1 line
+      266          </div>
+      267        </div>
+      268  
+      269 -      <div class="mt-7 flex items-center justify-between borde
+          -r-t border-paper-line pt-5">                                  
+      269 +      <div class="mt-6 flex items-center justify-between borde
+          +r-t border-paper-line pt-4">                                  
+      270          <button
+      271            type="button"
+      272            class="btn btn-danger"
+
+⏺ Now EntryRow — clean up the dup/del action labels.
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 1 line, removed 1 line
+      90  );
+      91  
+      92  const fieldClass = (field) => [
+      93 -  'cell-field tabular-mono',                                   
+      93 +  'cell-field tabular-nums',                                   
+      94    props.errors[field] ? 'cell-field-error' : '',
+      95  ];
+      96  
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 2 lines, removed 2 lines
+       98  </script>
+       99  
+      100  <template>
+      101 -  <tr class="align-top border-b border-paper-line last:border-
+          -b-0">                                                         
+      102 -    <td class="px-3 py-3 min-w-[180px]">                      
+      101 +  <tr class="align-top border-b border-paper-line last:border-
+          +b-0 hover:bg-paper-tint/40 transition-colors">                
+      102 +    <td class="px-2 py-2 min-w-[180px]">                      
+      103        <select
+      104          :class="fieldClass('company_id')"
+      105          :value="row.company_id ?? ''"
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 1 line, removed 1 line
+      112        </select>
+      113        <p v-if="fieldError('company_id')" class="mt-1 text-[11p
+           x] text-danger">{{ fieldError('company_id') }}</p>
+      114      </td>
+      115 -    <td class="px-3 py-3 min-w-[140px]">                      
+      115 +    <td class="px-2 py-2 min-w-[140px]">                      
+      116        <input
+      117          type="date"
+      118          :class="fieldClass('date')"
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 1 line, removed 1 line
+      123        />
+      124        <p v-if="fieldError('date')" class="mt-1 text-[11px] tex
+           t-danger">{{ fieldError('date') }}</p>
+      125      </td>
+      126 -    <td class="px-3 py-3 min-w-[180px]">                      
+      126 +    <td class="px-2 py-2 min-w-[180px]">                      
+      127        <select
+      128          :class="fieldClass('employee_id')"
+      129          :value="row.employee_id ?? ''"
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 1 line, removed 1 line
+      137        </select>
+      138        <p v-if="fieldError('employee_id')" class="mt-1 text-[11
+           px] text-danger">{{ fieldError('employee_id') }}</p>
+      139      </td>
+      140 -    <td class="px-3 py-3 min-w-[200px]">                      
+      140 +    <td class="px-2 py-2 min-w-[200px]">                      
+      141        <select
+      142          :class="fieldClass('project_id')"
+      143          :value="row.project_id ?? ''"
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 1 line, removed 1 line
+      159        </select>
+      160        <p v-if="fieldError('project_id')" class="mt-1 text-[11p
+           x] text-danger">{{ fieldError('project_id') }}</p>
+      161      </td>
+      162 -    <td class="px-3 py-3 min-w-[160px]">                      
+      162 +    <td class="px-2 py-2 min-w-[160px]">                      
+      163        <select
+      164          :class="fieldClass('task_id')"
+      165          :value="row.task_id ?? ''"
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 1 line, removed 1 line
+      173        </select>
+      174        <p v-if="fieldError('task_id')" class="mt-1 text-[11px] 
+           text-danger">{{ fieldError('task_id') }}</p>
+      175      </td>
+      176 -    <td class="px-3 py-3 w-[100px]">                          
+      176 +    <td class="px-2 py-2 w-[100px]">                          
+      177        <input
+      178          type="number"
+      179          step="0.25"
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 5 lines, removed 5 lines
+      187        />
+      188        <p v-if="fieldError('hours')" class="mt-1 text-[11px] te
+           xt-danger">{{ fieldError('hours') }}</p>
+      189      </td>
+      190 -    <td class="px-3 py-3 whitespace-nowrap text-right">       
+      190 +    <td class="px-2 py-2 whitespace-nowrap text-right">       
+      191        <button
+      192          type="button"
+      193 -        class="font-mono text-[11px] uppercase tracking-[var(-
+          --tracking-uppercase)] text-ink-mute hover:text-ink"           
+      193 +        class="rounded-md px-2 py-1 text-xs text-ink-soft tran
+          +sition-colors hover:bg-paper-tint hover:text-ink"             
+      194          title="Duplicate this row"
+      195          @click="$emit('duplicate')"
+      196        >
+      197 -        dup                                                   
+      197 +        Duplicate                                             
+      198        </button>
+      199        <button
+      200          type="button"
+      201 -        class="ml-3 font-mono text-[11px] uppercase tracking-[
+          -var(--tracking-uppercase)] text-ink-mute hover:text-danger"   
+      201 +        class="ml-1 rounded-md px-2 py-1 text-xs text-ink-soft
+          + transition-colors hover:bg-danger-bg hover:text-danger"      
+      202          title="Remove this row"
+      203          @click="$emit('remove')"
+      204        >
+      205 -        del                                                   
+      205 +        Remove                                                
+      206        </button>
+      207      </td>
+      208    </tr>
+
+⏺ Let me verify the build by starting the dev server.
+
+  Read 1 file (ctrl+o to expand)
+
+⏺ Bash(npm run build 2>&1 | tail -40)
+  ⎿  > build
+     > vite build
+     … +9 lines (ctrl+o to expand)
+
+⏺ Build compiles cleanly. Summary of UI-only changes:
+
+  - app.css — theme tokens swapped to a Notion palette: white canvas, warm
+  #37352f ink, #e9e9e7 hairlines, #2383e2 blue reserved for focus rings. Dropped
+   paper-grain bg and serif display. Buttons/fields/cards now have 6–8px rounded
+   corners. Inline cell fields reveal a soft tint on hover instead of always-on
+  dashed underlines.
+  - app.blade.php — dropped Instrument Serif from the Google Fonts request (no
+  italic display anymore).
+  - App.vue — header is now just "Time Entries" + a sentence of context and the
+  date on the right. No more "Vol. I · Issue 01" / italic "Time" accent.
+  - SummaryCard.vue — removed the "summary · n°01" editorial tag and the italic
+  huge stat numbers. Filter is now a real dropdown chip with a chevron. Stats
+  use semibold tabular numerals.
+  - Tabs.vue — plain semibold text labels with a dark underline (no more mono
+  uppercase).
+  - NewEntriesTab.vue — soft-tinted thead row, rounded card, kbd hints in
+  lowercase pill chips, total now semibold instead of italic display.
+  - HistoryTab.vue — labels are simple ink-mute text, empty state is plain "No
+  entries yet", pagination chips are rounded.
+  - EditEntryModal.vue — title is "Edit entry" (no "Amend the record"), close
+  button is an SVG icon in a soft hover target, labels and spacing cleaned up.
+  - EntryRow.vue — tighter row padding, "dup/del" buttons replaced with rounded
+  "Duplicate / Remove" chips that reveal hover backgrounds.
+
+  No functionality was touched — same components, props, events, composables.
+  Run npm run dev to see it.
+
+✻ Baked for 5m 47s
+
+❯ /effort                                                                       
+  ⎿  Set effort level to high: Comprehensive implementation with extensive
+     testing and documentation · burns fastest — medium handles most tasks
+
+❯ /effort                                                                       
+  ⎿  Set effort level to medium: Balanced approach with standard implementation
+     and testing
+
+❯  perfect, very good, lets just do some adjustments right now                  
+                                                                                
+  - need to adjust the layout shift on table, maybe set an fix width for each   
+  column                                                                        
+  - hours be integers, edit as integers always, now is changing on 0.25 to 0.25 
+  - change the shortcut to new one, command n the browser takes the control for 
+   that                                                                         
+  - add icons for the buttons of remove, duplicate and edit on table, just add  
+  an icon on the left side of each one                                          
+⏺ On it. Four adjustments — let me make them.
+
+⏺ Update(resources/js/components/NewEntriesTab.vue)
+  ⎿  Removed 6 lines
+      65    } else if (event.key.toLowerCase() === 'd') {
+      66      event.preventDefault();
+      67      duplicateRow(rows.value.length - 1);
+      68 -  } else if (event.key.toLowerCase() === 'n') {                
+      69 -    // Browsers often reserve Cmd/Ctrl+N for "new window" at th
+         -e OS level,                                                    
+      70 -    // so preventDefault may not always fire. Cmd+B is also bou
+         -nd below                                                       
+      71 -    // as a guaranteed fallback.                               
+      72 -    event.preventDefault();                                    
+      73 -    addRow();                                                  
+      68    } else if (event.key.toLowerCase() === 'b') {
+      69      event.preventDefault();
+      70      addRow();
+
+⏺ Update(resources/js/components/NewEntriesTab.vue)
+  ⎿  Added 10 lines, removed 1 line
+      124      </div>
+      125  
+      126      <div class="overflow-x-auto rounded-lg border border-paper
+           -line bg-paper">
+      127 -      <table class="min-w-full text-sm">                      
+      127 +      <table class="w-full table-fixed text-sm">              
+      128 +        <colgroup>                                            
+      129 +          <col style="width: 17%" />                          
+      130 +          <col style="width: 12%" />                          
+      131 +          <col style="width: 17%" />                          
+      132 +          <col style="width: 18%" />                          
+      133 +          <col style="width: 14%" />                          
+      134 +          <col style="width: 9%" />                           
+      135 +          <col style="width: 13%" />                          
+      136 +        </colgroup>                                           
+      137          <thead>
+      138            <tr class="border-b border-paper-line bg-paper-tint/
+           60">
+      139              <th
+
+⏺ Update(resources/js/components/NewEntriesTab.vue)
+  ⎿  Added 1 line, removed 1 line
+      168            <span aria-hidden="true">+</span> Add row
+      169          </button>
+      170          <p class="text-xs text-ink-mute">
+      171 -          <kbd class="rounded border border-paper-line bg-pape
+          -r-tint px-1 py-0.5 text-[10px] font-medium text-ink-soft">⌘N</
+          -kbd> new                                                      
+      171 +          <kbd class="rounded border border-paper-line bg-pape
+          +r-tint px-1 py-0.5 text-[10px] font-medium text-ink-soft">⌘B</
+          +kbd> new                                                      
+      172            <span class="mx-1">·</span>
+      173            <kbd class="rounded border border-paper-line bg-pape
+           r-tint px-1 py-0.5 text-[10px] font-medium text-ink-soft">⌘D</
+           kbd> duplicate
+      174            <span class="mx-1">·</span>
+
+⏺ Update(resources/js/components/NewEntriesTab.vue)
+  ⎿  Added 1 line, removed 1 line
+      182              {{ rows.length }} {{ rows.length === 1 ? 'row' : '
+           rows' }} · Total
+      183            </p>
+      184            <p class="text-xl font-semibold leading-tight text-i
+           nk tabular-nums">
+      185 -            {{ totalHours.toFixed(2) }}<span class="ml-0.5 tex
+          -t-xs font-normal text-ink-mute">h</span>                      
+      185 +            {{ totalHours }}<span class="ml-0.5 text-xs font-n
+          +ormal text-ink-mute">h</span>                                 
+      186            </p>
+      187          </div>
+      188          <button
+
+⏺ Now EntryRow — integer hours and icons.
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 5 lines, removed 4 lines
+      173        </select>
+      174        <p v-if="fieldError('task_id')" class="mt-1 text-[11px] 
+           text-danger">{{ fieldError('task_id') }}</p>
+      175      </td>
+      176 -    <td class="px-2 py-2 w-[100px]">                          
+      176 +    <td class="px-2 py-2">                                    
+      177        <input
+      178          type="number"
+      179 -        step="0.25"                                           
+      179 +        step="1"                                              
+      180          min="0"
+      181          max="24"
+      182 +        inputmode="numeric"                                   
+      183          :class="[fieldClass('hours'), 'text-right']"
+      184          :value="row.hours ?? ''"
+      185          :data-row="index"
+      186          data-field="hours"
+      186 -        @input="(e) => patch({ hours: e.target.value === '' ? 
+          -null : Number(e.target.value) })"                             
+      187 +        @input="(e) => patch({ hours: e.target.value === '' ? 
+          +null : Math.trunc(Number(e.target.value)) })"                 
+      188        />
+      188 -      <p v-if="fieldError('hours')" class="mt-1 text-[11px] te
+          -xt-danger">{{ fieldError('hours') }}</p>                      
+      189 +      <p v-if="fieldError('hours')" class="mt-1 text-[11px] te
+          +xt-danger break-words">{{ fieldError('hours') }}</p>          
+      190      </td>
+      191      <td class="px-2 py-2 whitespace-nowrap text-right">
+      192        <button
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 1 line, removed 1 line
+      110          <option value="">—</option>
+      111          <option v-for="c in companies" :key="c.id" :value="c.i
+           d">{{ c.name }}</option>
+      112        </select>
+      113 -      <p v-if="fieldError('company_id')" class="mt-1 text-[11p
+          -x] text-danger">{{ fieldError('company_id') }}</p>            
+      113 +      <p v-if="fieldError('company_id')" class="mt-1 text-[11p
+          +x] text-danger break-words">{{ fieldError('company_id') }}</p>
+      114      </td>
+      115      <td class="px-2 py-2 min-w-[140px]">
+      116        <input
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 1 line, removed 1 line
+      121          data-field="date"
+      122          @input="(e) => patch({ date: e.target.value })"
+      123        />
+      124 -      <p v-if="fieldError('date')" class="mt-1 text-[11px] tex
+          -t-danger">{{ fieldError('date') }}</p>                        
+      124 +      <p v-if="fieldError('date')" class="mt-1 text-[11px] tex
+          +t-danger break-words">{{ fieldError('date') }}</p>            
+      125      </td>
+      126      <td class="px-2 py-2 min-w-[180px]">
+      127        <select
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 1 line, removed 1 line
+      135          <option value="">{{ row.company_id ? '—' : 'pick a com
+           pany' }}</option>
+      136          <option v-for="e in employees" :key="e.id" :value="e.i
+           d">{{ e.name }}</option>
+      137        </select>
+      138 -      <p v-if="fieldError('employee_id')" class="mt-1 text-[11
+          -px] text-danger">{{ fieldError('employee_id') }}</p>          
+      138 +      <p v-if="fieldError('employee_id')" class="mt-1 text-[11
+          +px] text-danger break-words">{{ fieldError('employee_id') }}</
+          +p>                                                            
+      139      </td>
+      140      <td class="px-2 py-2 min-w-[200px]">
+      141        <select
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 1 line, removed 1 line
+      157          </option>
+      158          <option v-for="p in projects" :key="p.id" :value="p.id
+           ">{{ p.name }}</option>
+      159        </select>
+      160 -      <p v-if="fieldError('project_id')" class="mt-1 text-[11p
+          -x] text-danger">{{ fieldError('project_id') }}</p>            
+      160 +      <p v-if="fieldError('project_id')" class="mt-1 text-[11p
+          +x] text-danger break-words">{{ fieldError('project_id') }}</p>
+      161      </td>
+      162      <td class="px-2 py-2 min-w-[160px]">
+      163        <select
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 1 line, removed 1 line
+      171          <option value="">{{ row.company_id ? '—' : 'pick a com
+           pany' }}</option>
+      172          <option v-for="t in tasks" :key="t.id" :value="t.id">{
+           { t.name }}</option>
+      173        </select>
+      174 -      <p v-if="fieldError('task_id')" class="mt-1 text-[11px] 
+          -text-danger">{{ fieldError('task_id') }}</p>                  
+      174 +      <p v-if="fieldError('task_id')" class="mt-1 text-[11px] 
+          +text-danger break-words">{{ fieldError('task_id') }}</p>      
+      175      </td>
+      176      <td class="px-2 py-2">
+      177        <input
+
+⏺ Now also remove min-w from select tds (so colgroup widths take effect cleanly
+  under table-fixed) and add icons to action buttons.
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 1 line, removed 1 line
+       99  
+      100  <template>
+      101    <tr class="align-top border-b border-paper-line last:border-
+           b-0 hover:bg-paper-tint/40 transition-colors">
+      102 -    <td class="px-2 py-2 min-w-[180px]">                      
+      102 +    <td class="px-2 py-2">                                    
+      103        <select
+      104          :class="fieldClass('company_id')"
+      105          :value="row.company_id ?? ''"
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 1 line, removed 1 line
+      112        </select>
+      113        <p v-if="fieldError('company_id')" class="mt-1 text-[11p
+           x] text-danger break-words">{{ fieldError('company_id') }}</p>
+      114      </td>
+      115 -    <td class="px-2 py-2 min-w-[140px]">                      
+      115 +    <td class="px-2 py-2">                                    
+      116        <input
+      117          type="date"
+      118          :class="fieldClass('date')"
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 1 line, removed 1 line
+      123        />
+      124        <p v-if="fieldError('date')" class="mt-1 text-[11px] tex
+           t-danger break-words">{{ fieldError('date') }}</p>
+      125      </td>
+      126 -    <td class="px-2 py-2 min-w-[180px]">                      
+      126 +    <td class="px-2 py-2">                                    
+      127        <select
+      128          :class="fieldClass('employee_id')"
+      129          :value="row.employee_id ?? ''"
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 1 line, removed 1 line
+      137        </select>
+      138        <p v-if="fieldError('employee_id')" class="mt-1 text-[11
+           px] text-danger break-words">{{ fieldError('employee_id') }}</
+           p>
+      139      </td>
+      140 -    <td class="px-2 py-2 min-w-[200px]">                      
+      140 +    <td class="px-2 py-2">                                    
+      141        <select
+      142          :class="fieldClass('project_id')"
+      143          :value="row.project_id ?? ''"
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 1 line, removed 1 line
+      159        </select>
+      160        <p v-if="fieldError('project_id')" class="mt-1 text-[11p
+           x] text-danger break-words">{{ fieldError('project_id') }}</p>
+      161      </td>
+      162 -    <td class="px-2 py-2 min-w-[160px]">                      
+      162 +    <td class="px-2 py-2">                                    
+      163        <select
+      164          :class="fieldClass('task_id')"
+      165          :value="row.task_id ?? ''"
+
+⏺ Now action buttons with icons:
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 9 lines, removed 2 lines
+      191      <td class="px-2 py-2 whitespace-nowrap text-right">
+      192        <button
+      193          type="button"
+      194 -        class="rounded-md px-2 py-1 text-xs text-ink-soft tran
+          -sition-colors hover:bg-paper-tint hover:text-ink"             
+      194 +        class="inline-flex items-center gap-1 rounded-md px-2 
+          +py-1 text-xs text-ink-soft transition-colors hover:bg-paper-ti
+          +nt hover:text-ink"                                            
+      195          title="Duplicate this row"
+      196          @click="$emit('duplicate')"
+      197        >
+      198 +        <svg width="12" height="12" viewBox="0 0 16 16" fill="
+          +none" aria-hidden="true">                                     
+      199 +          <rect x="5.25" y="5.25" width="8.5" height="8.5" rx=
+          +"1.5" stroke="currentColor" stroke-width="1.4" />             
+      200 +          <path d="M3 11V3.75A1.75 1.75 0 014.75 2H11" stroke=
+          +"currentColor" stroke-width="1.4" stroke-linecap="round" />   
+      201 +        </svg>                                                
+      202          Duplicate
+      203        </button>
+      204        <button
+      205          type="button"
+      202 -        class="ml-1 rounded-md px-2 py-1 text-xs text-ink-soft
+          - transition-colors hover:bg-danger-bg hover:text-danger"      
+      206 +        class="ml-1 inline-flex items-center gap-1 rounded-md 
+          +px-2 py-1 text-xs text-ink-soft transition-colors hover:bg-dan
+          +ger-bg hover:text-danger"                                     
+      207          title="Remove this row"
+      208          @click="$emit('remove')"
+      209        >
+      210 +        <svg width="12" height="12" viewBox="0 0 16 16" fill="
+          +none" aria-hidden="true">                                     
+      211 +          <path d="M2.75 4.5h10.5M6.5 4.5V3.25A1.25 1.25 0 017
+          +.75 2h.5A1.25 1.25 0 019.5 3.25V4.5M5 4.5l.5 8.6A1.5 1.5 0 007
+          + 14.5h2A1.5 1.5 0 0010.5 13.1L11 4.5" stroke="currentColor" st
+          +roke-width="1.4" stroke-linecap="round" stroke-linejoin="round
+          +" />                                                          
+      212 +        </svg>                                                
+      213          Remove
+      214        </button>
+      215      </td>
+
+⏺ Now HistoryTab — fixed widths, truncate, edit icon. And EditEntryModal hours
+  integer.
+
+⏺ Update(resources/js/components/HistoryTab.vue)
+  ⎿  Added 20 lines, removed 8 lines
+      147      </div>
+      148  
+      149      <div class="overflow-hidden rounded-lg border border-paper
+           -line bg-paper">
+      150 -      <table class="min-w-full text-sm">                      
+      150 +      <table class="w-full table-fixed text-sm">              
+      151 +        <colgroup>                                            
+      152 +          <col style="width: 12%" />                          
+      153 +          <col style="width: 16%" />                          
+      154 +          <col style="width: 16%" />                          
+      155 +          <col style="width: 20%" />                          
+      156 +          <col style="width: 16%" />                          
+      157 +          <col style="width: 9%" />                           
+      158 +          <col style="width: 11%" />                          
+      159 +        </colgroup>                                           
+      160          <thead>
+      161            <tr class="border-b border-paper-line bg-paper-tint/
+           60">
+      162              <th class="px-3 py-2.5 text-left text-xs font-medi
+           um text-ink-soft">Date</th>
+     ...
+      174              :key="entry.id"
+      175              class="group border-b border-paper-line transition
+           -colors last:border-b-0 hover:bg-paper-tint"
+      176            >
+      168 -            <td class="px-3 py-2.5 tabular-nums text-ink-soft"
+          ->{{ formatDate(entry.date) }}</td>                            
+      169 -            <td class="px-3 py-2.5 text-ink">{{ entry.company.
+          -name }}</td>                                                  
+      170 -            <td class="px-3 py-2.5 text-ink">{{ entry.employee
+          -.name }}</td>                                                 
+      171 -            <td class="px-3 py-2.5 text-ink">{{ entry.project.
+          -name }}</td>                                                  
+      172 -            <td class="px-3 py-2.5 text-ink">{{ entry.task.nam
+          -e }}</td>                                                     
+      173 -            <td class="px-3 py-2.5 text-right tabular-nums tex
+          -t-ink">{{ Number(entry.hours).toFixed(2) }}</td>              
+      177 +            <td class="px-3 py-2.5 tabular-nums text-ink-soft 
+          +truncate">{{ formatDate(entry.date) }}</td>                   
+      178 +            <td class="px-3 py-2.5 text-ink truncate" :title="
+          +entry.company.name">{{ entry.company.name }}</td>             
+      179 +            <td class="px-3 py-2.5 text-ink truncate" :title="
+          +entry.employee.name">{{ entry.employee.name }}</td>           
+      180 +            <td class="px-3 py-2.5 text-ink truncate" :title="
+          +entry.project.name">{{ entry.project.name }}</td>             
+      181 +            <td class="px-3 py-2.5 text-ink truncate" :title="
+          +entry.task.name">{{ entry.task.name }}</td>                   
+      182 +            <td class="px-3 py-2.5 text-right tabular-nums tex
+          +t-ink">{{ Math.round(Number(entry.hours)) }}</td>             
+      183              <td class="px-3 py-2.5 text-right">
+      184                <button
+      185                  type="button"
+      177 -                class="rounded-md px-2 py-1 text-xs text-ink-s
+          -oft opacity-0 transition hover:bg-paper hover:text-ink group-h
+          -over:opacity-100 focus:opacity-100"                           
+      186 +                class="inline-flex items-center gap-1 rounded-
+          +md px-2 py-1 text-xs text-ink-soft opacity-0 transition hover:
+          +bg-paper hover:text-ink group-hover:opacity-100 focus:opacity-
+          +100"                                                          
+      187                  @click="editing = entry"
+      188                >
+      189 +                <svg width="12" height="12" viewBox="0 0 16 16
+          +" fill="none" aria-hidden="true">                             
+      190 +                  <path d="M11 2.5l2.5 2.5-7.5 7.5H3.5V10L11 2
+          +.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin=
+          +"round" />                                                    
+      191 +                </svg>                                        
+      192                  Edit
+      193                </button>
+      194              </td>
+⏺ Update(resources/js/components/HistoryTab.vue)
+  ⎿  Added 1 line, removed 1 line
+      134        <span v-else>
+      135          {{ meta.total }} {{ meta.total === 1 ? 'entry' : 'entr
+           ies' }}
+      136          ·
+      137 -        {{ totalHoursOnPage.toFixed(2) }}h on this page       
+      137 +        {{ Math.round(totalHoursOnPage) }}h on this page      
+      138        </span>
+      139        <button
+      140          type="button"
+
+⏺ Now EditEntryModal hours integer:
+
+⏺ Update(resources/js/components/EditEntryModal.vue)
+  ⎿  Added 3 lines, removed 2 lines
+      255            </label>
+      256            <input
+      257              type="number"
+      258 -            step="0.25"                                       
+      258 +            step="1"                                          
+      259              min="0"
+      260              max="24"
+      261 +            inputmode="numeric"                               
+      262              :class="[fieldClass('hours'), 'text-right']"
+      263              :value="form.hours ?? ''"
+      263 -            @input="(e) => (form.hours = e.target.value === ''
+          - ? null : Number(e.target.value))"                            
+      264 +            @input="(e) => (form.hours = e.target.value === ''
+          + ? null : Math.trunc(Number(e.target.value)))"                
+      265            />
+      266            <p v-if="fieldError('hours')" class="mt-1 text-[11px
+           ] text-danger">{{ fieldError('hours') }}</p>
+      267          </div>
+
+⏺ Update(resources/js/components/EditEntryModal.vue)
+  ⎿  Added 1 line, removed 1 line
+      29    employee_id: props.entry.employee.id,
+      30    project_id: props.entry.project.id,
+      31    task_id: props.entry.task.id,
+      32 -  hours: Number(props.entry.hours),                            
+      32 +  hours: Math.round(Number(props.entry.hours)),                
+      33  });
+      34  
+      35  const projects = ref([]);
+
+⏺ Verify build:
+
+⏺ Bash(npm run build 2>&1 | tail -10)
+  ⎿  vite v8.0.10 building client environment for production...
+     transforming...✓ 70 modules transformed.
+     rendering chunks...
+     … +6 lines (ctrl+o to expand)
+
+⏺ Build is clean. Summary of changes:
+
+  - Layout shift fix: NewEntriesTab and HistoryTab tables now use table-fixed +
+  a <colgroup> with percentage widths so columns don't shift when error messages
+   or longer values appear. Removed min-w-* from EntryRow cells, added truncate
+  + title attribute on history cells.
+  - Integer hours: input is now step="1" with inputmode="numeric" in both
+  EntryRow and EditEntryModal, parsed via Math.trunc(). Totals display as
+  integers (totalHours in NewEntriesTab, Math.round(...) in History rows and
+  page total). Existing decimal data is rounded for display/edit.
+  - Shortcut: dropped Cmd+N (browser steals it), Cmd+B is now the sole "new row"
+   binding. Help row updated to ⌘B.
+  - Icons on table action buttons: copy icon → Duplicate, trash icon → Remove
+  (EntryRow), pencil icon → Edit (HistoryTab). All inline 12px SVGs, sized as
+  left adornments via inline-flex gap-1.
+
+  Run npm run dev to see it.
+
+✻ Brewed for 3m 19s
+
+❯ just make one adjustment, if are only one row in                              
+  @resources/js/components/EntryRow.vue disable the remove button               
+  ⎿  Read resources/js/components/EntryRow.vue (336 lines)
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 4 lines
+      25          type: Number,
+      26          required: true,
+      27      },
+      28 +    canRemove: {                                               
+      29 +        type: Boolean,                                         
+      30 +        default: true,                                         
+      31 +    },                                                         
+      32  });
+      33  
+      34  const emit = defineEmits(["update:modelValue", "duplicate", "re
+          move"]);
+
+⏺ Update(resources/js/components/EntryRow.vue)
+  ⎿  Added 3 lines, removed 2 lines
+      314  
+      315              <button
+      316                  type="button"
+      317 -                class="ml-1 inline-flex items-center gap-1 rou
+          -nded-md px-2 py-1 text-xs text-ink-soft transition-colors hove
+          -r:bg-danger-bg hover:text-danger"                             
+      318 -                title="Remove this row"                       
+      317 +                class="ml-1 inline-flex items-center gap-1 rou
+          +nded-md px-2 py-1 text-xs text-ink-soft transition-colors hove
+          +r:bg-danger-bg hover:text-danger disabled:cursor-not-allowed d
+          +isabled:opacity-30 disabled:hover:bg-transparent disabled:hove
+          +r:text-ink-soft"                                              
+      318 +                :title="canRemove ? 'Remove this row' : 'At le
+          +ast one row is required'"                                     
+      319 +                :disabled="!canRemove"                        
+      320                  @click="$emit('remove')"
+      321              >
+      322                  <svg
+
+⏺ Update(resources/js/components/NewEntriesTab.vue)
+  ⎿  Added 1 line
+      167                          :model-value="row"
+      168                          :companies="companies"
+      169                          :errors="errors[i] ?? {}"
+      170 +                        :can-remove="rows.length > 1"         
+      171                          @update:model-value="rows[i] = $event"
+      172                          @duplicate="duplicateRow(i)"
+      173                          @remove="removeRow(i)"
+
+⏺ Done. EntryRow gets a canRemove prop; NewEntriesTab passes rows.length > 1.
+  The Remove button is disabled (with a 30% opacity, no hover styling,
+  explanatory tooltip) when only one row remains.
+
+✻ Brewed for 22s
+
+❯ /effort                                                                       
+  ⎿  Set effort level to high: Comprehensive implementation with extensive
+     testing and documentation · burns fastest — medium handles most tasks
