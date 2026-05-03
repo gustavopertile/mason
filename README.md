@@ -46,6 +46,10 @@ php artisan test
 
 30 feature/unit tests cover the data model, lookup endpoints, every business-rule path, and the edit/delete/filter flows.
 
+## AI conversation log
+
+As required by the challenge, the full AI conversation history is included in the repo under [`ai-sessions/`](ai-sessions/) — split into `first_session.json` through `fourth_session.json`.
+
 ---
 
 ## Spec coverage
@@ -172,7 +176,7 @@ REST: resource controllers, plural URIs, proper HTTP verbs, `JsonResource` for o
 | Models and relationships | ✅ | `app/Models/` |
 | API endpoints | ✅ | `routes/api.php` |
 | README explaining how to run | ✅ | this file |
-| JSON export of the AI conversation | ✅ | `conversation.json` (root) + `ai-sessions/` |
+| JSON export of the AI conversation | ✅ | `ai-sessions/` (4 session files) |
 
 ---
 
@@ -248,6 +252,5 @@ tests/
                             #   TimeEntryFiltersTest
   Unit/RelationshipsTest.php
 docs/PLAN.md                # original implementation plan
-conversation.json           # AI conversation export
-ai-sessions/                # additional session exports
+ai-sessions/                # AI conversation export (4 session files)
 ```
