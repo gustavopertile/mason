@@ -1,27 +1,31 @@
 import { ref } from 'vue';
 import { cachedGet } from './useApi';
 
+// Module-level singleton: every caller of `useCompanies()` shares the same
+// reactive ref. The previous version created per-component refs and relied on
+// the network cache to dedupe — this avoids that duplication entirely.
+const companiesRef = ref([]);
+const loadedRef = ref(false);
+let loadPromise = null;
+
 /**
  * Loads (and caches) the full company list once for the page lifetime.
- * Multiple components calling `load()` share a single request.
+ * Multiple components calling `load()` share a single request and a single
+ * reactive list.
  */
 export function useCompanies() {
-  const companies = ref([]);
-  const loaded = ref(false);
-  let loadPromise = null;
-
   async function load() {
-    if (loaded.value) return;
+    if (loadedRef.value) return;
     if (!loadPromise) {
       loadPromise = cachedGet('/companies').then((data) => {
-        companies.value = data;
-        loaded.value = true;
+        companiesRef.value = data;
+        loadedRef.value = true;
       });
     }
     await loadPromise;
   }
 
-  return { companies, load, loaded };
+  return { companies: companiesRef, load, loaded: loadedRef };
 }
 
 export const fetchEmployeesForCompany = (companyId) =>

@@ -9,7 +9,23 @@ const refreshSummary = inject("refreshSummary", () => {});
 const { companies, load: loadCompanies } = useCompanies();
 onMounted(loadCompanies);
 
-const today = () => new Date().toISOString().slice(0, 10);
+// Local-date YYYY-MM-DD. `toISOString()` would emit UTC, so around midnight in
+// non-UTC timezones the default would be off by one day.
+const today = () => {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+};
+
+function focusedRowIndex() {
+    const el = document.activeElement;
+    const rowEl = el?.closest?.("[data-row]");
+    if (!rowEl) return null;
+    const idx = Number(rowEl.dataset.row);
+    return Number.isFinite(idx) ? idx : null;
+}
 
 const blankRow = () => ({
     company_id: selectedCompanyId.value ?? null,
@@ -17,7 +33,7 @@ const blankRow = () => ({
     employee_id: null,
     project_id: null,
     task_id: null,
-    hours: null,
+    hours: 0,
 });
 
 const rows = ref([blankRow()]);
@@ -28,6 +44,17 @@ const flash = ref(null);
 const totalHours = computed(() =>
     rows.value.reduce((sum, row) => sum + (Number(row.hours) || 0), 0),
 );
+
+// When the global dropdown changes to a specific company, every row's
+// company is set to it as a default. The user can still change the company
+// per row afterwards — the global dropdown only seeds new rows and re-seeds
+// existing ones. Switching back to "All" leaves the rows untouched.
+watch(selectedCompanyId, (next) => {
+    if (next == null) return;
+    rows.value = rows.value.map((row) =>
+        row.company_id === next ? row : { ...row, company_id: next },
+    );
+});
 
 function addRow() {
     rows.value.push(blankRow());
@@ -49,13 +76,6 @@ function removeRow(index) {
     errors.value = next;
 }
 
-watch(selectedCompanyId, (next) => {
-    if (!next) return;
-    rows.value = rows.value.map((row) =>
-        row.company_id == null ? { ...row, company_id: next } : row,
-    );
-});
-
 function onKeydown(event) {
     const mod = event.metaKey || event.ctrlKey;
     if (!mod) return;
@@ -64,7 +84,8 @@ function onKeydown(event) {
         submit();
     } else if (event.key.toLowerCase() === "d") {
         event.preventDefault();
-        duplicateRow(rows.value.length - 1);
+        const idx = focusedRowIndex();
+        duplicateRow(idx ?? rows.value.length - 1);
     } else if (event.key.toLowerCase() === "b") {
         event.preventDefault();
         addRow();

@@ -1,11 +1,12 @@
 <script setup>
-import { ref, watch, onMounted, computed, inject } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount, nextTick, inject } from 'vue';
 import {
   useCompanies,
   fetchEmployeesForCompany,
   fetchProjectsForCompany,
   fetchTasksForCompany,
   fetchProjectsForEmployee,
+  fetchEmployeesForProject,
 } from '../composables/useCompanyData';
 import { updateTimeEntry, deleteTimeEntry } from '../composables/useTimeEntries';
 
@@ -38,6 +39,13 @@ const employees = ref([]);
 const errors = ref({});
 const saving = ref(false);
 const flash = ref(null);
+const confirmingDelete = ref(false);
+const modalPanelRef = ref(null);
+let previousActiveElement = null;
+
+let companyListsReqId = 0;
+let projectsReqId = 0;
+let employeesReqId = 0;
 
 const fieldClass = (field) => [
   'field tabular-mono',
@@ -48,12 +56,10 @@ const fieldError = (field) => errors.value[field]?.[0] ?? null;
 
 async function loadCompanyLists(companyId) {
   if (!companyId) return;
-  const [t, e] = await Promise.all([
-    fetchTasksForCompany(companyId),
-    fetchEmployeesForCompany(companyId),
-  ]);
+  const id = ++companyListsReqId;
+  const t = await fetchTasksForCompany(companyId);
+  if (id !== companyListsReqId) return;
   tasks.value = t;
-  employees.value = e;
 }
 
 async function narrowProjectsToEmployee(companyId, employeeId) {
@@ -61,27 +67,44 @@ async function narrowProjectsToEmployee(companyId, employeeId) {
     projects.value = [];
     return;
   }
-  if (!employeeId) {
-    projects.value = await fetchProjectsForCompany(companyId);
+  const id = ++projectsReqId;
+  const result = !employeeId
+    ? await fetchProjectsForCompany(companyId)
+    : await fetchProjectsForEmployee(companyId, employeeId);
+  if (id !== projectsReqId) return;
+  projects.value = result;
+}
+
+async function narrowEmployeesToProject(companyId, projectId) {
+  if (!companyId) {
+    employees.value = [];
     return;
   }
-  projects.value = await fetchProjectsForEmployee(companyId, employeeId);
+  const id = ++employeesReqId;
+  const result = !projectId
+    ? await fetchEmployeesForCompany(companyId)
+    : await fetchEmployeesForProject(companyId, projectId);
+  if (id !== employeesReqId) return;
+  employees.value = result;
 }
 
 watch(
   () => form.value.company_id,
   async (id, prev) => {
     if (id === prev) return;
-    await loadCompanyLists(id);
     if (prev !== undefined) {
       form.value.employee_id = null;
       form.value.project_id = null;
       form.value.task_id = null;
-      projects.value = await fetchProjectsForCompany(id);
-    } else {
-      // Initial load: narrow to the employee already on the entry.
-      await narrowProjectsToEmployee(id, form.value.employee_id);
     }
+    // On initial mount the existing entry's employee/project narrow each
+    // side. After a company change those are null, so each side ends up as
+    // the full per-company list.
+    await Promise.all([
+      loadCompanyLists(id),
+      narrowProjectsToEmployee(id, form.value.employee_id),
+      narrowEmployeesToProject(id, form.value.project_id),
+    ]);
   },
   { immediate: true },
 );
@@ -92,6 +115,16 @@ watch(
     await narrowProjectsToEmployee(form.value.company_id, employeeId);
     if (form.value.project_id && !projects.value.some((p) => p.id === form.value.project_id)) {
       form.value.project_id = null;
+    }
+  },
+);
+
+watch(
+  () => form.value.project_id,
+  async (projectId) => {
+    await narrowEmployeesToProject(form.value.company_id, projectId);
+    if (form.value.employee_id && !employees.value.some((e) => e.id === form.value.employee_id)) {
+      form.value.employee_id = null;
     }
   },
 );
@@ -117,7 +150,6 @@ async function save() {
 }
 
 async function destroy() {
-  if (!window.confirm('Delete this entry? This cannot be undone.')) return;
   saving.value = true;
   try {
     await deleteTimeEntry(props.entry.id);
@@ -125,10 +157,66 @@ async function destroy() {
     emit('deleted', props.entry.id);
   } catch {
     flash.value = { type: 'error', message: "Couldn't delete the entry." };
+    confirmingDelete.value = false;
   } finally {
     saving.value = false;
   }
 }
+
+function getFocusable() {
+  if (!modalPanelRef.value) return [];
+  return [...modalPanelRef.value.querySelectorAll(
+    'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+  )];
+}
+
+// Trap Tab/Shift-Tab inside the modal and close on Esc. Listening on
+// `document` (not the overlay) so it works regardless of where focus is —
+// otherwise focus could escape behind the modal and the keys wouldn't fire.
+function onKeydown(e) {
+  if (e.key === 'Escape') {
+    e.preventDefault();
+    emit('close');
+    return;
+  }
+  if (e.key !== 'Tab') return;
+  const focusable = getFocusable();
+  if (focusable.length === 0) return;
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  const active = document.activeElement;
+  const insideModal = modalPanelRef.value?.contains(active);
+
+  if (e.shiftKey) {
+    if (!insideModal || active === first) {
+      e.preventDefault();
+      last.focus();
+    }
+  } else if (!insideModal || active === last) {
+    e.preventDefault();
+    first.focus();
+  }
+}
+
+onMounted(async () => {
+  previousActiveElement = document.activeElement;
+  document.addEventListener('keydown', onKeydown);
+  await nextTick();
+  // Place focus on the first form field rather than the close button so the
+  // user can start editing immediately.
+  const firstField = modalPanelRef.value?.querySelector('select, input');
+  if (firstField) firstField.focus();
+  else getFocusable()[0]?.focus();
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('keydown', onKeydown);
+  // Restore focus to whatever launched the modal so keyboard navigation feels
+  // continuous for screen-reader and keyboard users.
+  if (previousActiveElement && typeof previousActiveElement.focus === 'function') {
+    previousActiveElement.focus();
+  }
+});
 
 function onBackdropClick(event) {
   if (event.target === event.currentTarget) emit('close');
@@ -139,14 +227,22 @@ function onBackdropClick(event) {
   <div
     class="modal-overlay fixed inset-0 z-40 flex items-start justify-center overflow-y-auto px-4 py-12"
     style="background-color: rgba(15, 15, 15, 0.45);"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="edit-entry-title"
     @click="onBackdropClick"
-    @keydown.esc="$emit('close')"
   >
-    <div class="modal-panel w-full max-w-xl rounded-lg border border-paper-line bg-paper p-6 shadow-xl">
+    <div
+      ref="modalPanelRef"
+      class="modal-panel w-full max-w-xl rounded-lg border border-paper-line bg-paper p-6 shadow-xl"
+    >
       <div class="mb-5 flex items-start justify-between">
         <div>
           <p class="text-xs text-ink-mute">Entry #{{ entry.id }}</p>
-          <h2 class="mt-0.5 text-xl font-semibold leading-tight tracking-[var(--tracking-tight)] text-ink">
+          <h2
+            id="edit-entry-title"
+            class="mt-0.5 text-xl font-semibold leading-tight tracking-[var(--tracking-tight)] text-ink"
+          >
             Edit entry
           </h2>
         </div>
@@ -180,6 +276,7 @@ function onBackdropClick(event) {
           <select
             :class="fieldClass('company_id')"
             :value="form.company_id ?? ''"
+            aria-label="Company"
             @change="(e) => (form.company_id = e.target.value ? Number(e.target.value) : null)"
           >
             <option value="">—</option>
@@ -196,6 +293,7 @@ function onBackdropClick(event) {
             type="date"
             :class="fieldClass('date')"
             :value="form.date"
+            aria-label="Date"
             @input="(e) => (form.date = e.target.value)"
           />
           <p v-if="fieldError('date')" class="mt-1 text-[11px] text-danger">{{ fieldError('date') }}</p>
@@ -209,6 +307,7 @@ function onBackdropClick(event) {
             :class="fieldClass('employee_id')"
             :value="form.employee_id ?? ''"
             :disabled="!form.company_id"
+            aria-label="Employee"
             @change="(e) => (form.employee_id = e.target.value ? Number(e.target.value) : null)"
           >
             <option value="">—</option>
@@ -225,6 +324,7 @@ function onBackdropClick(event) {
             :class="fieldClass('project_id')"
             :value="form.project_id ?? ''"
             :disabled="!form.company_id"
+            aria-label="Project"
             @change="(e) => (form.project_id = e.target.value ? Number(e.target.value) : null)"
           >
             <option value="">—</option>
@@ -241,6 +341,7 @@ function onBackdropClick(event) {
             :class="fieldClass('task_id')"
             :value="form.task_id ?? ''"
             :disabled="!form.company_id"
+            aria-label="Task"
             @change="(e) => (form.task_id = e.target.value ? Number(e.target.value) : null)"
           >
             <option value="">—</option>
@@ -261,6 +362,7 @@ function onBackdropClick(event) {
             inputmode="numeric"
             :class="[fieldClass('hours'), 'text-right']"
             :value="form.hours ?? ''"
+            aria-label="Hours"
             @input="(e) => (form.hours = e.target.value === '' ? null : Math.trunc(Number(e.target.value)))"
           />
           <p v-if="fieldError('hours')" class="mt-1 text-[11px] text-danger">{{ fieldError('hours') }}</p>
@@ -268,32 +370,57 @@ function onBackdropClick(event) {
       </div>
 
       <div class="mt-6 flex items-center justify-between border-t border-paper-line pt-4">
-        <button
-          type="button"
-          class="btn btn-danger"
-          :disabled="saving"
-          @click="destroy"
-        >
-          Delete entry
-        </button>
-        <div class="flex items-center gap-3">
+        <template v-if="!confirmingDelete">
           <button
             type="button"
-            class="btn btn-secondary"
+            class="btn btn-danger"
             :disabled="saving"
-            @click="$emit('close')"
+            @click="confirmingDelete = true"
           >
-            Cancel
+            Delete entry
           </button>
-          <button
-            type="button"
-            class="btn btn-primary"
-            :disabled="saving"
-            @click="save"
-          >
-            {{ saving ? 'Saving…' : 'Save changes' }}
-          </button>
-        </div>
+          <div class="flex items-center gap-3">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              :disabled="saving"
+              @click="$emit('close')"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              :disabled="saving"
+              @click="save"
+            >
+              {{ saving ? 'Saving…' : 'Save changes' }}
+            </button>
+          </div>
+        </template>
+        <template v-else>
+          <span class="text-sm font-medium text-danger">
+            Delete this entry? This cannot be undone.
+          </span>
+          <div class="flex items-center gap-3">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              :disabled="saving"
+              @click="confirmingDelete = false"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger"
+              :disabled="saving"
+              @click="destroy"
+            >
+              {{ saving ? 'Deleting…' : 'Confirm delete' }}
+            </button>
+          </div>
+        </template>
       </div>
     </div>
   </div>

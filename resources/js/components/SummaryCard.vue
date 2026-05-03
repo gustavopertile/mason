@@ -1,39 +1,15 @@
 <script setup>
-import { onMounted, watch, computed } from "vue";
-import { useCompanies } from "../composables/useCompanyData";
+import { onMounted, watch, computed, inject } from "vue";
 import { useSummary } from "../composables/useSummary";
 
-const props = defineProps({
-    modelValue: {
-        type: [Number, null],
-        default: null,
-    },
-});
-
-const emit = defineEmits(["update:modelValue"]);
-
-const { companies, load: loadCompanies } = useCompanies();
+const selectedCompanyId = inject("selectedCompanyId");
 const { summary, load: loadSummary, loading } = useSummary();
 
-onMounted(async () => {
-    await Promise.all([loadCompanies(), loadSummary(props.modelValue)]);
-});
+onMounted(() => loadSummary(selectedCompanyId.value));
 
-watch(
-    () => props.modelValue,
-    (id) => loadSummary(id),
-);
+watch(selectedCompanyId, (id) => loadSummary(id));
 
-defineExpose({ refresh: () => loadSummary(props.modelValue) });
-
-const selectValue = computed(() =>
-    props.modelValue === null ? "" : String(props.modelValue),
-);
-
-function onSelect(event) {
-    const raw = event.target.value;
-    emit("update:modelValue", raw === "" ? null : Number(raw));
-}
+defineExpose({ refresh: () => loadSummary(selectedCompanyId.value) });
 
 const scopeLabel = computed(
     () => summary.value?.company_name ?? "all companies",
@@ -90,45 +66,12 @@ const stats = computed(() => {
         class="rounded-lg border border-paper-line bg-paper px-5 py-5 sm:px-6 sm:py-6"
     >
         <div
-            class="flex flex-wrap items-center justify-between gap-3 border-b border-paper-line pb-4"
+            class="flex items-center justify-between border-b border-paper-line pb-4"
         >
-            <div class="flex items-center gap-2">
-                <span class="text-xs text-ink-mute">Showing</span>
-                <div class="relative">
-                    <select
-                        :value="selectValue"
-                        class="cursor-pointer appearance-none rounded-md border border-paper-line bg-paper py-1 pl-2.5 pr-7 text-sm font-medium text-ink transition-colors hover:bg-paper-tint focus:border-accent focus:outline-none"
-                        @change="onSelect"
-                    >
-                        <option value="">All companies</option>
-                        <option
-                            v-for="c in companies"
-                            :key="c.id"
-                            :value="c.id"
-                        >
-                            {{ c.name }}
-                        </option>
-                    </select>
-                    <svg
-                        aria-hidden="true"
-                        class="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-ink-mute"
-                        width="10"
-                        height="10"
-                        viewBox="0 0 12 12"
-                        fill="none"
-                    >
-                        <path
-                            d="M2.5 4.5L6 8l3.5-3.5"
-                            stroke="currentColor"
-                            stroke-width="1.5"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                        />
-                    </svg>
-                </div>
-            </div>
-
-            <div v-if="loading" class="text-xs text-ink-mute">Loading…</div>
+            <p class="text-xs text-ink-mute">
+                Showing {{ scopeLabel }}
+            </p>
+            <p v-if="loading" class="text-xs text-ink-mute">Loading…</p>
         </div>
 
         <div class="mt-5 grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-4">

@@ -42,6 +42,14 @@ const projects = ref([]);
 const tasks = ref([]);
 const employees = ref([]);
 
+// Request-id guards. If the user changes selectors faster than the network
+// resolves, only the most recent fetch is allowed to mutate the list refs —
+// stale responses are dropped. Without these, a slow earlier response can
+// overwrite a fresher narrower one.
+let companyListsReqId = 0;
+let projectsReqId = 0;
+let employeesReqId = 0;
+
 async function refreshCompanyLists(companyId) {
     if (!companyId) {
         projects.value = [];
@@ -49,13 +57,13 @@ async function refreshCompanyLists(companyId) {
         employees.value = [];
         return;
     }
-    // Loading employees + tasks always; projects load from the wider company
-    // list initially, then narrow once an employee is picked.
+    const id = ++companyListsReqId;
     const [t, e, p] = await Promise.all([
         fetchTasksForCompany(companyId),
         fetchEmployeesForCompany(companyId),
         fetchProjectsForCompany(companyId),
     ]);
+    if (id !== companyListsReqId) return;
     tasks.value = t;
     employees.value = e;
     projects.value = p;
@@ -63,32 +71,36 @@ async function refreshCompanyLists(companyId) {
 
 async function narrowProjectsToEmployee(companyId, employeeId) {
     if (!companyId) return;
-    if (!employeeId) {
-        // No employee selected: show every project on the company.
-        projects.value = await fetchProjectsForCompany(companyId);
-        return;
-    }
-    projects.value = await fetchProjectsForEmployee(companyId, employeeId);
+    const id = ++projectsReqId;
+    const result = !employeeId
+        ? await fetchProjectsForCompany(companyId)
+        : await fetchProjectsForEmployee(companyId, employeeId);
+    if (id !== projectsReqId) return;
+    projects.value = result;
 }
 
 async function narrowEmployeesToProject(companyId, projectId) {
     if (!companyId) return;
-    if (!projectId) {
-        // No project selected: show every employee on the company.
-        employees.value = await fetchEmployeesForCompany(companyId);
-        return;
-    }
-    employees.value = await fetchEmployeesForProject(companyId, projectId);
+    const id = ++employeesReqId;
+    const result = !projectId
+        ? await fetchEmployeesForCompany(companyId)
+        : await fetchEmployeesForProject(companyId, projectId);
+    if (id !== employeesReqId) return;
+    employees.value = result;
 }
 
 watch(
     () => row.value.company_id,
     async (id, prev) => {
         if (id === prev) return;
-        await refreshCompanyLists(id);
+        // Clear dependent IDs *before* refreshing the lists. If the lists
+        // are emptied while employee_id/project_id still hold their old
+        // values, the <select>s briefly point to options that no longer
+        // exist and render blank instead of the "pick a company" placeholder.
         if (prev !== undefined) {
             patch({ employee_id: null, project_id: null, task_id: null });
         }
+        await refreshCompanyLists(id);
     },
     { immediate: true },
 );
@@ -127,6 +139,16 @@ const fieldClass = (field) => [
 ];
 
 const fieldError = (field) => props.errors[field]?.[0] ?? null;
+
+const fieldLabels = {
+    company_id: "Company",
+    date: "Date",
+    employee_id: "Employee",
+    project_id: "Project",
+    task_id: "Task",
+    hours: "Hours",
+};
+const ariaLabel = (field) => `${fieldLabels[field]}, row ${props.index + 1}`;
 </script>
 
 <template>
@@ -138,6 +160,7 @@ const fieldError = (field) => props.errors[field]?.[0] ?? null;
                 :class="fieldClass('company_id')"
                 :value="row.company_id ?? ''"
                 :data-row="index"
+                :aria-label="ariaLabel('company_id')"
                 data-field="company_id"
                 @change="
                     (e) =>
@@ -167,6 +190,7 @@ const fieldError = (field) => props.errors[field]?.[0] ?? null;
                 :class="fieldClass('date')"
                 :value="row.date"
                 :data-row="index"
+                :aria-label="ariaLabel('date')"
                 data-field="date"
                 @input="(e) => patch({ date: e.target.value })"
             />
@@ -183,6 +207,7 @@ const fieldError = (field) => props.errors[field]?.[0] ?? null;
                 :value="row.employee_id ?? ''"
                 :disabled="!row.company_id"
                 :data-row="index"
+                :aria-label="ariaLabel('employee_id')"
                 data-field="employee_id"
                 @change="
                     (e) =>
@@ -214,6 +239,7 @@ const fieldError = (field) => props.errors[field]?.[0] ?? null;
                 :value="row.project_id ?? ''"
                 :disabled="!row.company_id"
                 :data-row="index"
+                :aria-label="ariaLabel('project_id')"
                 data-field="project_id"
                 @change="
                     (e) =>
@@ -245,6 +271,7 @@ const fieldError = (field) => props.errors[field]?.[0] ?? null;
                 :value="row.task_id ?? ''"
                 :disabled="!row.company_id"
                 :data-row="index"
+                :aria-label="ariaLabel('task_id')"
                 data-field="task_id"
                 @change="
                     (e) =>
@@ -280,6 +307,7 @@ const fieldError = (field) => props.errors[field]?.[0] ?? null;
                 :class="[fieldClass('hours'), 'pr-2']"
                 :value="row.hours ?? ''"
                 :data-row="index"
+                :aria-label="ariaLabel('hours')"
                 data-field="hours"
                 @input="
                     (e) =>

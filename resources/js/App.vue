@@ -4,6 +4,7 @@ import SummaryCard from "./components/SummaryCard.vue";
 import Tabs from "./components/Tabs.vue";
 import NewEntriesTab from "./components/NewEntriesTab.vue";
 import HistoryTab from "./components/HistoryTab.vue";
+import CompanyFilter from "./components/CompanyFilter.vue";
 
 // `null` => All companies; otherwise a specific company id.
 const selectedCompanyId = ref(null);
@@ -42,12 +43,15 @@ const today = computed(() =>
                         Hours worked, by company, employee, project, and task.
                     </p>
                 </div>
-                <p class="hidden text-sm text-ink-mute tabular-mono sm:block">
-                    {{ today }}
-                </p>
+                <div class="flex flex-col items-end gap-2">
+                    <CompanyFilter v-model="selectedCompanyId" />
+                    <p class="hidden text-xs text-ink-mute tabular-mono sm:block">
+                        {{ today }}
+                    </p>
+                </div>
             </header>
 
-            <SummaryCard ref="summaryRef" v-model="selectedCompanyId" />
+            <SummaryCard ref="summaryRef" />
 
             <Tabs v-model="activeTab" :tabs="tabs" />
 

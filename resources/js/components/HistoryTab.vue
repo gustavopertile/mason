@@ -183,7 +183,7 @@ const filtersActive = computed(() => Boolean(search.value || fromDate.value || t
             <td class="px-3 py-2.5 text-right">
               <button
                 type="button"
-                class="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs text-ink-soft opacity-0 transition hover:bg-paper hover:text-ink group-hover:opacity-100 focus:opacity-100"
+                class="inline-flex items-center gap-1 rounded-md bg-ink px-2.5 py-1 text-xs font-medium text-paper opacity-0 transition hover:bg-ink-soft focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-ink focus:ring-offset-1 group-hover:opacity-100"
                 @click="editing = entry"
               >
                 <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">

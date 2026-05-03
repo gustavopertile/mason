@@ -95,6 +95,10 @@ body {
 .field {
     @apply w-full rounded-md border border-paper-line bg-paper px-2.5 py-1.5 text-sm text-ink transition-colors;
 }
+/* Native <select> arrows need extra right padding so long names don't overlap them. */
+select.field {
+    @apply pr-8;
+}
 .field:hover {
     @apply border-paper-line-strong;
 }
@@ -113,6 +117,9 @@ body {
 /* Inline cell field — borderless, reveals border on hover/focus. */
 .cell-field {
     @apply w-full rounded-md border border-transparent bg-transparent px-2 py-1 text-sm text-ink transition-colors;
+}
+select.cell-field {
+    @apply pr-7;
 }
 .cell-field:hover {
     @apply bg-paper-tint;
