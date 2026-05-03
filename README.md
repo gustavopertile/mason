@@ -13,7 +13,7 @@ A small Laravel + Vue 3 (Composition API) application for entering and viewing e
 ## Setup
 
 ```bash
-git clone <repo-url> mason
+git clone [<repo-url>](https://github.com/gustavopertile/mason.git) mason
 cd mason
 composer setup
 ```
