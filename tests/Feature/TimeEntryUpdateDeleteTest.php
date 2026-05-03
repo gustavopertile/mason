@@ -49,14 +49,14 @@ class TimeEntryUpdateDeleteTest extends TestCase
             'project_id'  => $entry->project_id,
             'task_id'     => $entry->task_id,
             'date'        => '2026-02-10',
-            'hours'       => 6.5,
+            'hours'       => 7,
         ];
 
         $this->putJson("/api/time-entries/{$entry->id}", $payload)
             ->assertOk()
-            ->assertJsonPath('data.hours', 6.5);
+            ->assertJsonPath('data.hours', 7);
 
-        $this->assertSame('6.50', (string) $entry->fresh()->hours);
+        $this->assertSame(7, $entry->fresh()->hours);
     }
 
     public function test_update_does_not_conflict_with_itself(): void

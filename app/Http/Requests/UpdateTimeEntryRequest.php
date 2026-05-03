@@ -27,7 +27,7 @@ class UpdateTimeEntryRequest extends FormRequest
             'project_id'  => ['required', 'integer', 'exists:projects,id'],
             'task_id'     => ['required', 'integer', 'exists:tasks,id'],
             'date'        => ['required', 'date_format:Y-m-d'],
-            'hours'       => ['required', 'numeric', 'min:0.01', 'max:24'],
+            'hours'       => ['required', 'integer', 'min:1', 'max:24'],
         ];
     }
 
@@ -57,8 +57,8 @@ class UpdateTimeEntryRequest extends FormRequest
             'date.required'         => 'Date is required.',
             'date.date_format'      => 'Use a valid date (YYYY-MM-DD).',
             'hours.required'        => 'Hours is required.',
-            'hours.numeric'         => 'Hours must be a number.',
-            'hours.min'             => 'Hours must be greater than 0.',
+            'hours.integer'         => 'Hours must be a whole number.',
+            'hours.min'             => 'Hours must be at least 1.',
             'hours.max'             => "Hours can't exceed 24 in a single entry.",
             'company_id.exists'     => 'Pick a valid company.',
             'employee_id.exists'    => 'Pick a valid employee.',

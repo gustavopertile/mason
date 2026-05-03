@@ -179,7 +179,7 @@ const filtersActive = computed(() => Boolean(search.value || fromDate.value || t
             <td class="px-3 py-2.5 text-ink truncate" :title="entry.employee.name">{{ entry.employee.name }}</td>
             <td class="px-3 py-2.5 text-ink truncate" :title="entry.project.name">{{ entry.project.name }}</td>
             <td class="px-3 py-2.5 text-ink truncate" :title="entry.task.name">{{ entry.task.name }}</td>
-            <td class="px-3 py-2.5 text-right tabular-nums text-ink">{{ Math.round(Number(entry.hours)) }}</td>
+            <td class="px-3 py-2.5 text-right tabular-nums text-ink">{{ entry.hours }}</td>
             <td class="px-3 py-2.5 text-right">
               <button
                 type="button"

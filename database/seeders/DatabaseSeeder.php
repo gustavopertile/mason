@@ -96,9 +96,8 @@ class DatabaseSeeder extends Seeder
         }
     }
 
-    private function randomHours(): float
+    private function randomHours(): int
     {
-        // Quarters between 1.0 and 6.0 hours.
-        return round(random_int(4, 24) / 4, 2);
+        return random_int(1, 6);
     }
 }

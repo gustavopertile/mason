@@ -29,7 +29,7 @@ const form = ref({
   employee_id: props.entry.employee.id,
   project_id: props.entry.project.id,
   task_id: props.entry.task.id,
-  hours: Math.round(Number(props.entry.hours)),
+  hours: props.entry.hours,
 });
 
 const projects = ref([]);
@@ -256,7 +256,7 @@ function onBackdropClick(event) {
           <input
             type="number"
             step="1"
-            min="0"
+            min="1"
             max="24"
             inputmode="numeric"
             :class="[fieldClass('hours'), 'text-right']"

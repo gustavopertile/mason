@@ -37,7 +37,7 @@ class TimeEntryFactory extends Factory
             'project_id'  => $project->id,
             'task_id'     => $task->id,
             'date'        => fake()->dateTimeBetween('-30 days', 'now')->format('Y-m-d'),
-            'hours'       => fake()->randomFloat(2, 0.5, 8),
+            'hours'       => fake()->numberBetween(1, 8),
         ];
     }
 }

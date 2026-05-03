@@ -29,7 +29,7 @@ class StoreTimeEntriesRequest extends FormRequest
             'entries.*.project_id'  => ['required', 'integer', 'exists:projects,id'],
             'entries.*.task_id'     => ['required', 'integer', 'exists:tasks,id'],
             'entries.*.date'        => ['required', 'date_format:Y-m-d'],
-            'entries.*.hours'       => ['required', 'numeric', 'min:0.01', 'max:24'],
+            'entries.*.hours'       => ['required', 'integer', 'min:1', 'max:24'],
         ];
     }
 
@@ -67,8 +67,8 @@ class StoreTimeEntriesRequest extends FormRequest
             'entries.*.date.required'        => 'Date is required.',
             'entries.*.date.date_format'     => 'Use a valid date (YYYY-MM-DD).',
             'entries.*.hours.required'       => 'Hours is required.',
-            'entries.*.hours.numeric'        => 'Hours must be a number.',
-            'entries.*.hours.min'            => 'Hours must be greater than 0.',
+            'entries.*.hours.integer'        => 'Hours must be a whole number.',
+            'entries.*.hours.min'            => 'Hours must be at least 1.',
             'entries.*.hours.max'            => "Hours can't exceed 24 in a single entry.",
             'entries.*.company_id.exists'    => 'Pick a valid company.',
             'entries.*.employee_id.exists'   => 'Pick a valid employee.',

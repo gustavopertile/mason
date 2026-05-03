@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('project_id')->constrained()->cascadeOnDelete();
             $table->foreignId('task_id')->constrained()->cascadeOnDelete();
             $table->date('date');
-            $table->decimal('hours', 5, 2);
+            $table->unsignedTinyInteger('hours');
             $table->timestamps();
 
             // Speeds up the business-rule lookup

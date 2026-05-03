@@ -19,7 +19,7 @@ class TimeEntryResource extends JsonResource
         return [
             'id'       => $this->id,
             'date'     => $this->date->format('Y-m-d'),
-            'hours'    => (float) $this->hours,
+            'hours'    => (int) $this->hours,
             'company'  => ['id' => $this->company->id,  'name' => $this->company->name],
             'employee' => ['id' => $this->employee->id, 'name' => $this->employee->name],
             'project'  => ['id' => $this->project->id,  'name' => $this->project->name],
