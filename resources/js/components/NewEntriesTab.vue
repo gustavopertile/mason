@@ -3,6 +3,9 @@ import { ref, inject, onMounted, onBeforeUnmount, computed, watch } from "vue";
 import EntryRow from "./EntryRow.vue";
 import { useCompanies } from "../composables/useCompanyData";
 import { createTimeEntries } from "../composables/useTimeEntries";
+import { useToast } from "../composables/useToast";
+
+const toast = useToast();
 
 const selectedCompanyId = inject("selectedCompanyId");
 const refreshSummary = inject("refreshSummary", () => {});
@@ -39,7 +42,6 @@ const blankRow = () => ({
 const rows = ref([blankRow()]);
 const errors = ref({});
 const submitting = ref(false);
-const flash = ref(null);
 
 const totalHours = computed(() =>
     rows.value.reduce((sum, row) => sum + (Number(row.hours) || 0), 0),
@@ -97,14 +99,12 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKeydown));
 
 async function submit() {
     errors.value = {};
-    flash.value = null;
     submitting.value = true;
     try {
         const created = await createTimeEntries(rows.value);
-        flash.value = {
-            type: "success",
-            message: `Saved ${created.length} ${created.length === 1 ? "entry" : "entries"}.`,
-        };
+        toast.success(
+            `Saved ${created.length} ${created.length === 1 ? "entry" : "entries"}.`,
+        );
         rows.value = [blankRow()];
         refreshSummary();
     } catch (err) {
@@ -119,16 +119,11 @@ async function submit() {
                 grouped[idx][field] = flat[key];
             }
             errors.value = grouped;
-            flash.value = {
-                type: "error",
-                message:
-                    "Some rows have problems. Fix the highlighted fields and resubmit.",
-            };
+            toast.error(
+                "Some rows have problems. Fix the highlighted fields and resubmit.",
+            );
         } else {
-            flash.value = {
-                type: "error",
-                message: "Something went wrong saving your entries.",
-            };
+            toast.error("Something went wrong saving your entries.");
         }
     } finally {
         submitting.value = false;
@@ -138,19 +133,6 @@ async function submit() {
 
 <template>
     <section class="space-y-4">
-        <div
-            v-if="flash"
-            :class="[
-                'rounded-md border px-3.5 py-2 text-sm',
-                flash.type === 'success'
-                    ? 'border-success bg-success-bg text-success'
-                    : 'border-danger bg-danger-bg text-danger',
-            ]"
-            role="status"
-        >
-            {{ flash.message }}
-        </div>
-
         <div
             class="overflow-x-auto rounded-lg border border-paper-line bg-paper"
         >

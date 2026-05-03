@@ -9,6 +9,9 @@ import {
   fetchEmployeesForProject,
 } from '../composables/useCompanyData';
 import { updateTimeEntry, deleteTimeEntry } from '../composables/useTimeEntries';
+import { useToast } from '../composables/useToast';
+
+const toast = useToast();
 
 const props = defineProps({
   entry: {
@@ -38,7 +41,6 @@ const tasks = ref([]);
 const employees = ref([]);
 const errors = ref({});
 const saving = ref(false);
-const flash = ref(null);
 const confirmingDelete = ref(false);
 const modalPanelRef = ref(null);
 let previousActiveElement = null;
@@ -131,7 +133,6 @@ watch(
 
 async function save() {
   errors.value = {};
-  flash.value = null;
   saving.value = true;
   try {
     const updated = await updateTimeEntry(props.entry.id, form.value);
@@ -140,9 +141,9 @@ async function save() {
   } catch (err) {
     if (err.response?.status === 422) {
       errors.value = err.response.data.errors ?? {};
-      flash.value = { type: 'error', message: 'Fix the highlighted fields and try again.' };
+      toast.error('Fix the highlighted fields and try again.');
     } else {
-      flash.value = { type: 'error', message: 'Something went wrong saving the entry.' };
+      toast.error('Something went wrong saving the entry.');
     }
   } finally {
     saving.value = false;
@@ -156,7 +157,7 @@ async function destroy() {
     refreshSummary();
     emit('deleted', props.entry.id);
   } catch {
-    flash.value = { type: 'error', message: "Couldn't delete the entry." };
+    toast.error("Couldn't delete the entry.");
     confirmingDelete.value = false;
   } finally {
     saving.value = false;
@@ -256,16 +257,6 @@ function onBackdropClick(event) {
             <path d="M3.5 3.5L12.5 12.5M12.5 3.5L3.5 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
           </svg>
         </button>
-      </div>
-
-      <div
-        v-if="flash"
-        :class="[
-          'mb-4 rounded-md border px-3 py-2 text-sm',
-          flash.type === 'error' ? 'border-danger bg-danger-bg text-danger' : 'border-success bg-success-bg text-success',
-        ]"
-      >
-        {{ flash.message }}
       </div>
 
       <div class="grid grid-cols-1 gap-x-4 gap-y-3.5 sm:grid-cols-2">

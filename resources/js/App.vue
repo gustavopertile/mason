@@ -5,6 +5,7 @@ import Tabs from "./components/Tabs.vue";
 import NewEntriesTab from "./components/NewEntriesTab.vue";
 import HistoryTab from "./components/HistoryTab.vue";
 import CompanyFilter from "./components/CompanyFilter.vue";
+import ToastHost from "./components/ToastHost.vue";
 
 // `null` => All companies; otherwise a specific company id.
 const selectedCompanyId = ref(null);
@@ -58,5 +59,6 @@ const today = computed(() =>
             <NewEntriesTab v-if="activeTab === 'new'" />
             <HistoryTab v-else />
         </div>
+        <ToastHost />
     </div>
 </template>
